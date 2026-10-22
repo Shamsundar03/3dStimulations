@@ -1916,8 +1916,8 @@
         searchBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size: 1.2rem;">arrow_forward</span>`;
         renderDefault3DModels(); 
       } else if (mode === 'videos') {
-        searchInput.placeholder = "Search YouTube (Needs API)...";
-        searchBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size: 1.2rem; color: #ff4444;">smart_display</span>`;
+        searchInput.placeholder = "Search any video";
+        searchBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size: 1.2rem; color: #3b82f6;">play_circle</span>`;
         renderTree();
       } else {
         searchInput.placeholder = `Search ${mode === 'phet' ? 'PhET simulations' : 'e-Books'}...`;
