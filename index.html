@@ -1,1 +1,2388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Black & Transparent Glassmorphism - SmartBoard Science & Math</title>
 
+  <!-- Google Fonts & Material Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+
+  <!-- Sketchfab Viewer API -->
+  <script type="text/javascript" src="https://static.sketchfab.com/api/sketchfab-viewer-1.12.1.js"></script>
+
+  <style>
+    /* Dark Transparent Variables from Code 1 */
+    :root {
+      --glass-bg: transparent; 
+      --glass-hover: rgba(255, 255, 255, 0.05);
+      --glass-border: rgba(255, 255, 255, 0.15);
+      --glass-border-light: rgba(255, 255, 255, 0.25);
+      --text-main: #ffffff;
+      --text-muted: rgba(255, 255, 255, 0.6);
+      --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --radius-pill: 50px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* Pure Black Background */
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #000000;
+      color: var(--text-main);
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* WebKit Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.4); }
+
+    /* Main App Container */
+    .app-container {
+      display: flex;
+      gap: 20px;
+      width: 96vw;
+      height: 92vh;
+      max-width: 1600px;
+      z-index: 10;
+    }
+
+    /* Glass Effect Utility Class */
+    .glass {
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-top: 1px solid var(--glass-border-light);
+      border-left: 1px solid var(--glass-border-light);
+      box-shadow: var(--shadow-glass);
+      border-radius: var(--radius-lg);
+    }
+
+    /* SIDEBAR */
+    .side-panel {
+      width: 300px; 
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .side-panel.closed {
+      width: 0;
+      border: none;
+      opacity: 0;
+      margin-left: -20px; /* pull back gap */
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 24px;
+      font-weight: 600;
+      font-size: 1.4rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      /* Brand gradient style from Code 2 adapted for glass */
+      background: linear-gradient(135deg, #a5b4fc, #ffffff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Glass Tabs */
+    .tabs {
+      display: flex;
+      padding: 16px;
+      gap: 8px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid transparent;
+      padding: 12px 4px;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.8rem;
+      border-radius: var(--radius-md);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .tab-btn:hover {
+      background: var(--glass-hover);
+      color: var(--text-main);
+    }
+
+    .tab-btn.active {
+      background: transparent;
+      color: var(--text-main);
+      border: 1px solid var(--glass-border);
+    }
+
+    /* Glass Search Box with Button */
+    .search-box {
+      padding: 0 16px 16px 16px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .search-input-wrapper {
+      position: relative;
+      flex: 1;
+    }
+
+    .search-input-wrapper .material-symbols-outlined {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-main);
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 12px 16px 12px 44px;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: var(--radius-pill);
+      color: var(--text-main);
+      outline: none;
+      font-size: 0.9rem;
+      transition: all 0.3s;
+    }
+
+    .search-box input::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .search-box input:focus {
+      background: var(--glass-hover);
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .search-box input:-webkit-autofill,
+    .search-box input:-webkit-autofill:hover, 
+    .search-box input:-webkit-autofill:focus, 
+    .search-box input:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 30px #050505 inset !important;
+        -webkit-text-fill-color: var(--text-main) !important;
+        transition: background-color 5000s ease-in-out 0s;
+        caret-color: white;
+    }
+
+    /* Simulation Tree */
+    .sim-tree {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 16px 20px 16px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.2) transparent;
+    }
+
+    .subject-header {
+      padding: 14px 18px;
+      background: transparent;
+      margin-top: 8px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-weight: 500;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      transition: all 0.3s;
+    }
+
+    .subject-header:hover {
+      background: var(--glass-hover);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Adapted for Code 2's deep nested levels */
+    .class-header {
+      padding: 10px 16px 10px 24px;
+      color: rgba(255, 255, 255, 0.85);
+      background: transparent;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background-color 0.2s;
+    }
+
+    .class-header:hover {
+      background: var(--glass-hover);
+      border-radius: 8px;
+    }
+
+    .chapter-title {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.5);
+      margin: 12px 0 6px 16px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .sim-item {
+      padding: 10px 16px 10px 24px;
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.7);
+      cursor: pointer;
+      border-radius: var(--radius-md);
+      transition: all 0.3s;
+      margin-bottom: 4px;
+      position: relative;
+    }
+
+    .sim-item::before {
+      content: '';
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 4px;
+      background-color: rgba(255,255,255,0.3);
+      border-radius: 50%;
+      transition: background-color 0.2s;
+    }
+
+    .sim-item:hover {
+      background: var(--glass-hover);
+      color: #fff;
+      transform: translateX(4px);
+    }
+
+    .sim-item:hover::before {
+      background-color: #fff;
+    }
+
+    /* 3D Models Grid */
+    .sketchfab-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      padding-top: 10px;
+    }
+
+    .sketchfab-card {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s;
+    }
+
+    .sketchfab-card:hover {
+      background: var(--glass-hover);
+      transform: translateY(-5px);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .sketchfab-card img {
+      width: 100%;
+      height: 100px;
+      object-fit: cover;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .sketchfab-card h4 {
+      font-size: 0.75rem;
+      padding: 12px;
+      margin: 0;
+      color: #fff;
+      text-align: center;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* MAIN STAGE */
+    .board-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+
+    /* Glass Top Toolbar */
+    .toolbar-glass {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: transparent;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 10px 24px;
+      border-radius: var(--radius-pill);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      z-index: 100;
+    }
+
+    .toolbar-glass .sim-title {
+      font-weight: 500;
+      font-size: 0.8rem; 
+      color: rgba(255, 255, 255, 0.85); 
+      display: flex;
+      align-items: center;
+      gap: 6px; 
+    }
+
+    /* Fully Transparent Button */
+    .btn-glass {
+      background: transparent;
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 6px 16px;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.3s;
+      font-size: 0.85rem;
+    }
+
+    .btn-glass:hover {
+      background: var(--glass-hover);
+      border-color: rgba(255, 255, 255, 0.6);
+    }
+
+    .whiteboard-placeholder {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .whiteboard-placeholder .material-symbols-outlined {
+      font-size: 5rem;
+      margin-bottom: 20px;
+      opacity: 0.5;
+    }
+
+    .whiteboard-placeholder h2 {
+      font-weight: 500;
+      font-size: 1.8rem;
+    }
+
+    .whiteboard-placeholder p {
+      margin-top: 10px;
+      opacity: 0.6;
+      font-weight: 300;
+      max-width: 400px;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      border-radius: var(--radius-lg);
+      background: #151515; 
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Loading Spinner */
+    .loader-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      color: rgba(255,255,255,0.7);
+      font-size: 0.9rem;
+    }
+    .loader {
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-top: 3px solid var(--text-main);
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 12px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+      .app-container {
+        flex-direction: column;
+        width: 100vw;
+        height: 100vh;
+        padding: 10px;
+        border-radius: 0;
+      }
+      .side-panel {
+        width: 100%;
+        height: 40vh;
+        flex-shrink: 0;
+      }
+      .side-panel.closed {
+        height: 0;
+        width: 100%;
+        margin: 0;
+      }
+      .board-area {
+        flex: 1;
+        width: 100%;
+      }
+      .toolbar-glass {
+        width: 90%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- GLASS SIDEBAR -->
+    <div class="side-panel glass" id="sidePanel">
+      <div class="brand">
+        <span class="material-symbols-outlined">cast_for_education</span>
+        OpenX
+      </div>
+
+      <!-- Glass Tabs -->
+      <div class="tabs">
+        <button class="tab-btn active" id="tab-3d" onclick="switchMode('3d')" aria-label="3D Models Tab">
+          <span class="material-symbols-outlined">view_in_ar</span>
+          3D Models
+        </button>
+        <button class="tab-btn" id="tab-phet" onclick="switchMode('phet')" aria-label="2D PhET Tab">
+          <span class="material-symbols-outlined">science</span>
+          2D PhET
+        </button>
+        <button class="tab-btn" id="tab-videos" onclick="switchMode('videos')" aria-label="Videos Tab">
+          <span class="material-symbols-outlined">smart_display</span>
+          Videos
+        </button>
+        <button class="tab-btn" id="tab-ebooks" onclick="switchMode('ebooks')" aria-label="e-Books Tab">
+          <span class="material-symbols-outlined">menu_book</span>
+          e-Books
+        </button>
+      </div>
+
+      <div class="search-box">
+        <div class="search-input-wrapper">
+          <span class="material-symbols-outlined">search</span>
+          <!-- Removed oninput so search happens on button click -->
+          <input type="text" id="searchInput" placeholder="Search 3D models (e.g. Heart)..." aria-label="Search Input" />
+        </div>
+        <!-- Transparent Search Button -->
+        <button id="searchBtn" class="btn-glass" onclick="handleSearchClick()" aria-label="Execute Search" style="padding: 0 14px;">
+          <span class="material-symbols-outlined" style="font-size: 1.2rem;">arrow_forward</span>
+        </button>
+      </div>
+
+      <div class="sim-tree" id="simTree">
+        <!-- Dynamically injected via JavaScript -->
+      </div>
+    </div>
+
+    <!-- GLASS MAIN STAGE -->
+    <div class="board-area glass">
+      
+      <!-- Glass Toolbar -->
+      <div class="toolbar-glass">
+        <!-- Sidebar Toggle from Code 2 integrated into Glass UI -->
+        <button class="btn-glass" onclick="toggleSidebar()" aria-label="Toggle Sidebar" title="Toggle Sidebar" style="padding: 6px 10px;">
+          <span class="material-symbols-outlined" style="font-size: 1.2rem;">menu_open</span>
+        </button>
+        
+        <span id="active-sim-title" class="sim-title">
+          <span class="material-symbols-outlined" style="font-size: 1rem;">info</span>
+          No simulation loaded
+        </span>
+
+        <div id="sketchfabControls" class="model-controls hidden" style="margin-left: 12px; padding-left: 12px; border-left: 1px solid rgba(255,255,255,0.2);">
+          <button class="btn-glass" onclick="toggleAnimation()" id="toggleAnimBtn" aria-label="Pause Animation">
+            <span class="material-symbols-outlined" id="animIcon" style="font-size: 1.2rem;">pause</span> 
+            <span id="animText">Pause</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="whiteboardPlaceholder" class="whiteboard-placeholder">
+        <span class="material-symbols-outlined">interactive_space</span>
+        <h2>Ready to Explore</h2>
+        <p>Select a 3D model, simulation, video, or e-book from the panel to project it onto the SmartBoard.</p>
+      </div>
+
+      <iframe id="phetIframe" class="hidden" allow="fullscreen; autoplay; xr-spatial-tracking" allowfullscreen title="Content Viewer"></iframe>
+    </div>
+
+  </div>
+
+  <script>
+    // -----------------------------------------
+    // 1. PhET (2D) Data (From Code 2)
+    // -----------------------------------------
+    const phetData = {
+      physics: {
+        title: "Physics",
+        chapters: {
+          "Motion": [
+            { name: "Buoyancy: Basics", url: "https://phet.colorado.edu/sims/html/buoyancy-basics/latest/buoyancy-basics_en.html" },
+            { name: "Buoyancy", url: "https://phet.colorado.edu/sims/html/buoyancy/latest/buoyancy_en.html" },
+            { name: "Projectile Data Lab", url: "https://phet.colorado.edu/sims/html/projectile-data-lab/latest/projectile-data-lab_en.html" },
+            { name: "Kepler's Laws", url: "https://phet.colorado.edu/sims/html/keplers-laws/latest/keplers-laws_en.html" },
+            { name: "My Solar System", url: "https://phet.colorado.edu/sims/html/my-solar-system/latest/my-solar-system_en.html" },
+            { name: "Calculus Grapher", url: "https://phet.colorado.edu/sims/html/calculus-grapher/latest/calculus-grapher_en.html" },
+            { name: "Normal Modes", url: "https://phet.colorado.edu/sims/html/normal-modes/latest/normal-modes_en.html" },
+            { name: "Collision Lab", url: "https://phet.colorado.edu/sims/html/collision-lab/latest/collision-lab_en.html" },
+            { name: "Energy Skate Park", url: "https://phet.colorado.edu/sims/html/energy-skate-park/latest/energy-skate-park_en.html" },
+            { name: "Vector Addition", url: "https://phet.colorado.edu/sims/html/vector-addition/latest/vector-addition_en.html" },
+            { name: "Gravity Force Lab: Basics", url: "https://phet.colorado.edu/sims/html/gravity-force-lab-basics/latest/gravity-force-lab-basics_en.html" },
+            { name: "Masses and Springs: Basics", url: "https://phet.colorado.edu/sims/html/masses-and-springs-basics/latest/masses-and-springs-basics_en.html" },
+            { name: "Masses and Springs", url: "https://phet.colorado.edu/sims/html/masses-and-springs/latest/masses-and-springs_en.html" },
+            { name: "Pendulum Lab", url: "https://phet.colorado.edu/sims/html/pendulum-lab/latest/pendulum-lab_en.html" },
+            { name: "Projectile Motion", url: "https://phet.colorado.edu/sims/html/projectile-motion/latest/projectile-motion_en.html" },
+            { name: "Gravity and Orbits", url: "https://phet.colorado.edu/sims/html/gravity-and-orbits/latest/gravity-and-orbits_en.html" },
+            { name: "Hooke's Law", url: "https://phet.colorado.edu/sims/html/hookes-law/latest/hookes-law_en.html" },
+            { name: "Energy Skate Park: Basics", url: "https://phet.colorado.edu/sims/html/energy-skate-park-basics/latest/energy-skate-park-basics_en.html" },
+            { name: "Balancing Act", url: "https://phet.colorado.edu/sims/html/balancing-act/latest/balancing-act_en.html" },
+            { name: "Friction", url: "https://phet.colorado.edu/sims/html/friction/latest/friction_en.html" },
+            { name: "Forces and Motion: Basics", url: "https://phet.colorado.edu/sims/html/forces-and-motion-basics/latest/forces-and-motion-basics_en.html" },
+            { name: "Gravity Force Lab", url: "https://phet.colorado.edu/sims/html/gravity-force-lab/latest/gravity-force-lab_en.html" }
+          ],
+          "Sound & Waves": [
+            { name: "Sound Waves", url: "https://phet.colorado.edu/sims/html/sound-waves/latest/sound-waves_en.html" },
+            { name: "Fourier: Making Waves", url: "https://phet.colorado.edu/sims/html/fourier-making-waves/latest/fourier-making-waves_en.html" },
+            { name: "Waves Intro", url: "https://phet.colorado.edu/sims/html/waves-intro/latest/waves-intro_en.html" },
+            { name: "Wave Interference", url: "https://phet.colorado.edu/sims/html/wave-interference/latest/wave-interference_en.html" },
+            { name: "Wave on a String", url: "https://phet.colorado.edu/sims/html/wave-on-a-string/latest/wave-on-a-string_en.html" }
+          ],
+          "Work, Energy & Power": [
+            { name: "Generator", url: "https://phet.colorado.edu/sims/html/generator/latest/generator_en.html" },
+            { name: "Faraday's Electromagnetic Lab", url: "https://phet.colorado.edu/sims/html/faradays-electromagnetic-lab/latest/faradays-electromagnetic-lab_en.html" },
+            { name: "Energy Skate Park", url: "https://phet.colorado.edu/sims/html/energy-skate-park/latest/energy-skate-park_en.html" },
+            { name: "Gas Properties", url: "https://phet.colorado.edu/sims/html/gas-properties/latest/gas-properties_en.html" },
+            { name: "Energy Forms and Changes", url: "https://phet.colorado.edu/sims/html/energy-forms-and-changes/latest/energy-forms-and-changes_en.html" },
+            { name: "Masses and Springs", url: "https://phet.colorado.edu/sims/html/masses-and-springs/latest/masses-and-springs_en.html" },
+            { name: "Pendulum Lab", url: "https://phet.colorado.edu/sims/html/pendulum-lab/latest/pendulum-lab_en.html" },
+            { name: "Hooke's Law", url: "https://phet.colorado.edu/sims/html/hookes-law/latest/hookes-law_en.html" },
+            { name: "Energy Skate Park: Basics", url: "https://phet.colorado.edu/sims/html/energy-skate-park-basics/latest/energy-skate-park-basics_en.html" }
+          ],
+          "Heat & Thermo": [
+            { name: "Diffusion", url: "https://phet.colorado.edu/sims/html/diffusion/latest/diffusion_en.html" },
+            { name: "Gases Intro", url: "https://phet.colorado.edu/sims/html/gases-intro/latest/gases-intro_en.html" },
+            { name: "Gas Properties", url: "https://phet.colorado.edu/sims/html/gas-properties/latest/gas-properties_en.html" },
+            { name: "Energy Forms and Changes", url: "https://phet.colorado.edu/sims/html/energy-forms-and-changes/latest/energy-forms-and-changes_en.html" },
+            { name: "States of Matter: Basics", url: "https://phet.colorado.edu/sims/html/states-of-matter-basics/latest/states-of-matter-basics_en.html" },
+            { name: "States of Matter", url: "https://phet.colorado.edu/sims/html/states-of-matter/latest/states-of-matter_en.html" },
+            { name: "Plinko Probability", url: "https://phet.colorado.edu/sims/html/plinko-probability/latest/plinko-probability_en.html" },
+            { name: "Atomic Interactions", url: "https://phet.colorado.edu/sims/html/atomic-interactions/latest/atomic-interactions_en.html" },
+            { name: "Friction", url: "https://phet.colorado.edu/sims/html/friction/latest/friction_en.html" }
+          ],
+          "Quantum Phenomena": [
+            { name: "Quantum Measurement", url: "https://phet.colorado.edu/sims/html/quantum-measurement/latest/quantum-measurement_en.html" },
+            { name: "Models of the Hydrogen Atom", url: "https://phet.colorado.edu/sims/html/models-of-the-hydrogen-atom/latest/models-of-the-hydrogen-atom_en.html" },
+            { name: "Fourier: Making Waves", url: "https://phet.colorado.edu/sims/html/fourier-making-waves/latest/fourier-making-waves_en.html" },
+            { name: "Blackbody Spectrum", url: "https://phet.colorado.edu/sims/html/blackbody-spectrum/latest/blackbody-spectrum_en.html" },
+            { name: "Rutherford Scattering", url: "https://phet.colorado.edu/sims/html/rutherford-scattering/latest/rutherford-scattering_en.html" }
+          ],
+          "Light & Radiation": [
+            { name: "Models of the Hydrogen Atom", url: "https://phet.colorado.edu/sims/html/models-of-the-hydrogen-atom/latest/models-of-the-hydrogen-atom_en.html" },
+            { name: "Geometric Optics: Basics", url: "https://phet.colorado.edu/sims/html/geometric-optics-basics/latest/geometric-optics-basics_en.html" },
+            { name: "Geometric Optics", url: "https://phet.colorado.edu/sims/html/geometric-optics/latest/geometric-optics_en.html" },
+            { name: "Fourier: Making Waves", url: "https://phet.colorado.edu/sims/html/fourier-making-waves/latest/fourier-making-waves_en.html" },
+            { name: "Waves Intro", url: "https://phet.colorado.edu/sims/html/waves-intro/latest/waves-intro_en.html" },
+            { name: "Blackbody Spectrum", url: "https://phet.colorado.edu/sims/html/blackbody-spectrum/latest/blackbody-spectrum_en.html" },
+            { name: "Wave Interference", url: "https://phet.colorado.edu/sims/html/wave-interference/latest/wave-interference_en.html" },
+            { name: "Bending Light", url: "https://phet.colorado.edu/sims/html/molecules-and-light/latest/molecules-and-light_en.html" },
+            { name: "Color Vision", url: "https://phet.colorado.edu/sims/html/color-vision/latest/color-vision_en.html" }
+          ],
+          "Electricity, Magnets & Circuits": [
+            { name: "Generator", url: "https://phet.colorado.edu/sims/html/generator/latest/generator_en.html" },
+            { name: "Magnets and Electromagnets", url: "https://phet.colorado.edu/sims/html/magnets-and-electromagnets/latest/magnets-and-electromagnets_en.html" },
+            { name: "Magnet and Compass", url: "https://phet.colorado.edu/sims/html/magnet-and-compass/latest/magnet-and-compass_en.html" },
+            { name: "Faraday's Electromagnetic Lab", url: "https://phet.colorado.edu/sims/html/faradays-electromagnetic-lab/latest/faradays-electromagnetic-lab_en.html" },
+            { name: "Circuit Construction Kit: AC", url: "https://phet.colorado.edu/sims/html/circuit-construction-kit-ac/latest/circuit-construction-kit-ac_en.html" },
+            { name: "Circuit Construction Kit: AC - Virtual Lab", url: "https://phet.colorado.edu/sims/html/circuit-construction-kit-ac-virtual-lab/latest/circuit-construction-kit-ac-virtual-lab_en.html" },
+            { name: "Coulomb's Law", url: "https://phet.colorado.edu/sims/html/coulombs-law/latest/coulombs-law_en.html" },
+            { name: "Capacitor Lab: Basics", url: "https://phet.colorado.edu/sims/html/capacitor-lab-basics/latest/capacitor-lab-basics_en.html" },
+            { name: "Circuit Construction Kit: DC - Virtual Lab", url: "https://phet.colorado.edu/sims/html/circuit-construction-kit-dc-virtual-lab/latest/circuit-construction-kit-dc-virtual-lab_en.html" },
+            { name: "Circuit Construction Kit: DC", url: "https://phet.colorado.edu/sims/html/circuit-construction-kit-dc/latest/circuit-construction-kit-dc_en.html" },
+            { name: "Charges and Fields", url: "https://phet.colorado.edu/sims/html/charges-and-fields/latest/charges-and-fields_en.html" },
+            { name: "Faraday's Law", url: "https://phet.colorado.edu/sims/html/faradays-law/latest/faradays-law_en.html" },
+            { name: "John Travoltage", url: "https://phet.colorado.edu/sims/html/john-travoltage/latest/john-travoltage_en.html" },
+            { name: "Balloons and Static Electricity", url: "https://phet.colorado.edu/sims/html/balloons-and-static-electricity/latest/balloons-and-static-electricity_en.html" },
+            { name: "Ohm's Law", url: "https://phet.colorado.edu/sims/html/ohms-law/latest/ohms-law_en.html" },
+            { name: "Resistance in a Wire", url: "https://phet.colorado.edu/sims/html/resistance-in-a-wire/latest/resistance-in-a-wire_en.html" }
+          ]
+        }
+      },
+      biology: {
+        title: "Biology",
+        chapters: {
+          "General Biology": [
+            { name: "Membrane Transport", url: "https://phet.colorado.edu/sims/html/membrane-transport/latest/membrane-transport_en.html" },
+            { name: "Density", url: "https://phet.colorado.edu/sims/html/density/latest/density_en.html" },
+            { name: "Natural Selection", url: "https://phet.colorado.edu/sims/html/natural-selection/latest/natural-selection_en.html" },
+            { name: "Gene Expression Essentials", url: "https://phet.colorado.edu/sims/html/gene-expression-essentials/latest/gene-expression-essentials_en.html" },
+            { name: "Molecule Polarity", url: "https://phet.colorado.edu/sims/html/molecule-polarity/latest/molecule-polarity_en.html" },
+            { name: "Neuron", url: "https://phet.colorado.edu/sims/html/neuron/latest/neuron_en.html" },
+            { name: "Color Vision", url: "https://phet.colorado.edu/sims/html/color-vision/latest/color-vision_en.html" },
+            { name: "pH Scale", url: "https://phet.colorado.edu/sims/html/ph-scale/latest/ph-scale_en.html" }
+          ]
+        }
+      },
+      chemistry: {
+        title: "Chemistry",
+        chapters: {
+          "General Chemistry": [
+            { name: "Membrane Transport", url: "https://phet.colorado.edu/sims/html/membrane-transport/latest/membrane-transport_en.html" },
+            { name: "Models of the Hydrogen Atom", url: "https://phet.colorado.edu/sims/html/models-of-the-hydrogen-atom/latest/models-of-the-hydrogen-atom_en.html" },
+            { name: "Density", url: "https://phet.colorado.edu/sims/html/density/latest/density_en.html" },
+            { name: "Build a Molecule", url: "https://phet.colorado.edu/sims/html/build-a-molecule/latest/build-a-molecule_en.html" },
+            { name: "Diffusion", url: "https://phet.colorado.edu/sims/html/diffusion/latest/diffusion_en.html" },
+            { name: "Gases Intro", url: "https://phet.colorado.edu/sims/html/gases-intro/latest/gases-intro_en.html" },
+            { name: "Gas Properties", url: "https://phet.colorado.edu/sims/html/gas-properties/latest/gas-properties_en.html" },
+            { name: "Energy Forms and Changes", url: "https://phet.colorado.edu/sims/html/energy-forms-and-changes/latest/energy-forms-and-changes_en.html" },
+            { name: "Coulomb's Law", url: "https://phet.colorado.edu/sims/html/coulombs-law/latest/coulombs-law_en.html" },
+            { name: "Molecule Polarity", url: "https://phet.colorado.edu/sims/html/molecule-polarity/latest/molecule-polarity_en.html" },
+            { name: "States of Matter: Basics", url: "https://phet.colorado.edu/sims/html/states-of-matter-basics/latest/states-of-matter-basics_en.html" },
+            { name: "States of Matter", url: "https://phet.colorado.edu/sims/html/states-of-matter/latest/states-of-matter_en.html" },
+            { name: "Atomic Interactions", url: "https://phet.colorado.edu/sims/html/atomic-interactions/latest/atomic-interactions_en.html" },
+            { name: "Rutherford Scattering", url: "https://phet.colorado.edu/sims/html/rutherford-scattering/latest/rutherford-scattering_en.html" },
+            { name: "Isotopes and Atomic Mass", url: "https://phet.colorado.edu/sims/html/isotopes-and-atomic-mass/latest/isotopes-and-atomic-mass_en.html" },
+            { name: "Molecules and Light", url: "https://phet.colorado.edu/sims/html/molecules-and-light/latest/molecules-and-light_en.html" },
+            { name: "Molecule Shapes", url: "https://phet.colorado.edu/sims/html/molecule-shapes/latest/molecule-shapes_en.html" },
+            { name: "Molecule Shapes: Basics", url: "https://phet.colorado.edu/sims/html/molecule-shapes-basics/latest/molecule-shapes-basics_en.html" },
+            { name: "Reactants, Products and Leftovers", url: "https://phet.colorado.edu/sims/html/reactants-products-and-leftovers/latest/reactants-products-and-leftovers_en.html" },
+            { name: "pH Scale: Basics", url: "https://phet.colorado.edu/sims/html/ph-scale-basics/latest/ph-scale-basics_en.html" },
+            { name: "Wave on a String", url: "https://phet.colorado.edu/sims/html/wave-on-a-string/latest/wave-on-a-string_en.html" },
+            { name: "pH Scale", url: "https://phet.colorado.edu/sims/html/ph-scale/latest/ph-scale_en.html" },
+            { name: "Balancing Chemical Equations", url: "https://phet.colorado.edu/sims/html/balancing-chemical-equations/latest/balancing-chemical-equations_en.html" },
+            { name: "Acid-Base Solutions", url: "https://phet.colorado.edu/sims/html/acid-base-solutions/latest/acid-base-solutions_en.html" },
+            { name: "Concentration", url: "https://phet.colorado.edu/sims/html/concentration/latest/concentration_en.html" },
+            { name: "Balloons and Static Electricity", url: "https://phet.colorado.edu/sims/html/balloons-and-static-electricity/latest/balloons-and-static-electricity_en.html" },
+            { name: "Beer's Law Lab", url: "https://phet.colorado.edu/sims/html/beers-law-lab/latest/beers-law-lab_en.html" },
+            { name: "Molarity", url: "https://phet.colorado.edu/sims/html/molarity/latest/molarity_en.html" },
+            { name: "Build an Atom", url: "https://phet.colorado.edu/sims/html/build-an-atom/latest/build-an-atom_en.html" }
+          ],
+          "Quantum Chemistry": [
+            { name: "Quantum Coin Toss", url: "https://phet.colorado.edu/sims/html/quantum-coin-toss/latest/quantum-coin-toss_en.html" },
+            { name: "Quantum Measurement", url: "https://phet.colorado.edu/sims/html/quantum-measurement/latest/quantum-measurement_en.html" },
+            { name: "Models of the Hydrogen Atom", url: "https://phet.colorado.edu/sims/html/models-of-the-hydrogen-atom/latest/models-of-the-hydrogen-atom_en.html" },
+            { name: "Fourier: Making Waves", url: "https://phet.colorado.edu/sims/html/fourier-making-waves/latest/fourier-making-waves_en.html" },
+            { name: "Blackbody Spectrum", url: "https://phet.colorado.edu/sims/html/blackbody-spectrum/latest/blackbody-spectrum_en.html" }
+          ]
+        }
+      },
+      math: {
+        title: "Math & Statistics",
+        chapters: {
+          "Math Concepts": [
+            { name: "Number Pairs", url: "https://phet.colorado.edu/sims/html/number-pairs/latest/number-pairs_en.html" },
+            { name: "Mean: Share and Balance", url: "https://phet.colorado.edu/sims/html/mean-share-and-balance/latest/mean-share-and-balance_en.html" },
+            { name: "Center and Variability", url: "https://phet.colorado.edu/sims/html/center-and-variability/latest/center-and-variability_en.html" },
+            { name: "Quadrilateral", url: "https://phet.colorado.edu/sims/html/quadrilateral/latest/quadrilateral_en.html" },
+            { name: "Calculus Grapher", url: "https://phet.colorado.edu/sims/html/calculus-grapher/latest/calculus-grapher_en.html" },
+            { name: "Number Compare", url: "https://phet.colorado.edu/sims/html/number-compare/latest/number-compare_en.html" },
+            { name: "Number Play", url: "https://phet.colorado.edu/sims/html/number-play/latest/number-play_en.html" },
+            { name: "Number Line: Distance", url: "https://phet.colorado.edu/sims/html/number-line-distance/latest/number-line-distance_en.html" },
+            { name: "Ratio and Proportion", url: "https://phet.colorado.edu/sims/html/ratio-and-proportion/latest/ratio-and-proportion_en.html" },
+            { name: "Number Line: Operations", url: "https://phet.colorado.edu/sims/html/number-line-operations/latest/number-line-operations_en.html" },
+            { name: "Number Line: Integers", url: "https://phet.colorado.edu/sims/html/number-line-integers/latest/number-line-integers_en.html" },
+            { name: "Vector Addition: Equations", url: "https://phet.colorado.edu/sims/html/vector-addition-equations/latest/vector-addition-equations_en.html" },
+            { name: "Vector Addition", url: "https://phet.colorado.edu/sims/html/vector-addition/latest/vector-addition_en.html" },
+            { name: "Fractions: Mixed Numbers", url: "https://phet.colorado.edu/sims/html/fractions-mixed-numbers/latest/fractions-mixed-numbers_en.html" },
+            { name: "Fractions: Intro", url: "https://phet.colorado.edu/sims/html/fractions-intro/latest/fractions-intro_en.html" },
+            { name: "Build a Fraction", url: "https://phet.colorado.edu/sims/html/build-a-fraction/latest/build-a-fraction_en.html" },
+            { name: "Fractions: Equality", url: "https://phet.colorado.edu/sims/html/fractions-equality/latest/fractions-equality_en.html" },
+            { name: "Graphing Quadratics", url: "https://phet.colorado.edu/sims/html/graphing-quadratics/latest/graphing-quadratics_en.html" },
+            { name: "Equality Explorer: Two Variables", url: "https://phet.colorado.edu/sims/html/equality-explorer-two-variables/latest/equality-explorer-two-variables_en.html" },
+            { name: "Equality Explorer: Basics", url: "https://phet.colorado.edu/sims/html/equality-explorer-basics/latest/equality-explorer-basics_en.html" },
+            { name: "Equality Explorer", url: "https://phet.colorado.edu/sims/html/equality-explorer/latest/equality-explorer_en.html" },
+            { name: "Area Model Algebra", url: "https://phet.colorado.edu/sims/html/area-model-algebra/latest/area-model-algebra_en.html" },
+            { name: "Area Model Decimals", url: "https://phet.colorado.edu/sims/html/area-model-decimals/latest/area-model-decimals_en.html" },
+            { name: "Area Model Multiplication", url: "https://phet.colorado.edu/sims/html/area-model-multiplication/latest/area-model-multiplication_en.html" },
+            { name: "Area Model Introduction", url: "https://phet.colorado.edu/sims/html/area-model-introduction/latest/area-model-introduction_en.html" },
+            { name: "Expression Exchange", url: "https://phet.colorado.edu/sims/html/expression-exchange/latest/expression-exchange_en.html" },
+            { name: "Graphing Slope-Intercept", url: "https://phet.colorado.edu/sims/html/graphing-slope-intercept/latest/graphing-slope-intercept_en.html" },
+            { name: "Function Builder: Basics", url: "https://phet.colorado.edu/sims/html/function-builder-basics/latest/function-builder-basics_en.html" },
+            { name: "Proportion Playground", url: "https://phet.colorado.edu/sims/html/proportion-playground/latest/proportion-playground_en.html" },
+            { name: "Unit Rates", url: "https://phet.colorado.edu/sims/html/unit-rates/latest/unit-rates_en.html" },
+            { name: "Make a Ten", url: "https://phet.colorado.edu/sims/html/make-a-ten/latest/make-a-ten_en.html" },
+            { name: "Plinko Probability", url: "https://phet.colorado.edu/sims/html/plinko-probability/latest/plinko-probability_en.html" },
+            { name: "Function Builder", url: "https://phet.colorado.edu/sims/html/function-builder/latest/function-builder_en.html" },
+            { name: "Trig Tour", url: "https://phet.colorado.edu/sims/html/trig-tour/latest/trig-tour_en.html" },
+            { name: "Arithmetic", url: "https://phet.colorado.edu/sims/html/arithmetic/latest/arithmetic_en.html" },
+            { name: "Least-Squares Regression", url: "https://phet.colorado.edu/sims/html/least-squares-regression/latest/least-squares-regression_en.html" },
+            { name: "Area Builder", url: "https://phet.colorado.edu/sims/html/area-builder/latest/area-builder_en.html" },
+            { name: "Graphing Lines", url: "https://phet.colorado.edu/sims/html/graphing-lines/latest/graphing-lines_en.html" },
+            { name: "Fraction Matcher", url: "https://phet.colorado.edu/sims/html/fraction-matcher/latest/fraction-matcher_en.html" }
+          ],
+          "Math Applications": [
+            { name: "Projectile Sampling Distributions", url: "https://phet.colorado.edu/sims/html/projectile-sampling-distributions/latest/projectile-sampling-distributions_en.html" },
+            { name: "Projectile Data Lab", url: "https://phet.colorado.edu/sims/html/projectile-data-lab/latest/projectile-data-lab_en.html" },
+            { name: "Kepler's Laws", url: "https://phet.colorado.edu/sims/html/keplers-laws/latest/keplers-laws_en.html" },
+            { name: "Fourier: Making Waves", url: "https://phet.colorado.edu/sims/html/fourier-making-waves/latest/fourier-making-waves_en.html" },
+            { name: "Curve Fitting", url: "https://phet.colorado.edu/sims/html/curve-fitting/latest/curve-fitting_en.html" },
+            { name: "Masses and Springs", url: "https://phet.colorado.edu/sims/html/masses-and-springs/latest/masses-and-springs_en.html" },
+            { name: "Pendulum Lab", url: "https://phet.colorado.edu/sims/html/pendulum-lab/latest/pendulum-lab_en.html" },
+            { name: "Projectile Motion", url: "https://phet.colorado.edu/sims/html/projectile-motion/latest/projectile-motion_en.html" },
+            { name: "Wave on a String", url: "https://phet.colorado.edu/sims/html/wave-on-a-string/latest/wave-on-a-string_en.html" },
+            { name: "Balancing Act", url: "https://phet.colorado.edu/sims/html/balancing-act/latest/balancing-act_en.html" },
+            { name: "Ohm's Law", url: "https://phet.colorado.edu/sims/html/ohms-law/latest/ohms-law_en.html" },
+            { name: "Resistance in a Wire", url: "https://phet.colorado.edu/sims/html/resistance-in-a-wire/latest/resistance-in-a-wire_en.html" }
+          ]
+        }
+      },
+      earth: {
+        title: "Earth & Space",
+        chapters: {
+          "Earth & Space": [
+            { name: "Magnet and Compass", url: "https://phet.colorado.edu/sims/html/magnet-and-compass/latest/magnet-and-compass_en.html" },
+            { name: "Kepler's Laws", url: "https://phet.colorado.edu/sims/html/keplers-laws/latest/keplers-laws_en.html" },
+            { name: "My Solar System", url: "https://phet.colorado.edu/sims/html/my-solar-system/latest/my-solar-system_en.html" },
+            { name: "Greenhouse Effect", url: "https://phet.colorado.edu/sims/html/greenhouse-effect/latest/greenhouse-effect_en.html" },
+            { name: "Density", url: "https://phet.colorado.edu/sims/html/density/latest/density_en.html" },
+            { name: "Gravity Force Lab: Basics", url: "https://phet.colorado.edu/sims/html/gravity-force-lab-basics/latest/gravity-force-lab-basics_en.html" },
+            { name: "Waves Intro", url: "https://phet.colorado.edu/sims/html/waves-intro/latest/waves-intro_en.html" },
+            { name: "Diffusion", url: "https://phet.colorado.edu/sims/html/diffusion/latest/diffusion_en.html" },
+            { name: "Gases Intro", url: "https://phet.colorado.edu/sims/html/gases-intro/latest/gases-intro_en.html" },
+            { name: "Gas Properties", url: "https://phet.colorado.edu/sims/html/gas-properties/latest/gas-properties_en.html" },
+            { name: "Blackbody Spectrum", url: "https://phet.colorado.edu/sims/html/blackbody-spectrum/latest/blackbody-spectrum_en.html" },
+            { name: "Wave Interference", url: "https://phet.colorado.edu/sims/html/wave-interference/latest/wave-interference_en.html" },
+            { name: "Gravity and Orbits", url: "https://phet.colorado.edu/sims/html/gravity-and-orbits/latest/gravity-and-orbits_en.html" },
+            { name: "Molecules and Light", url: "https://phet.colorado.edu/sims/html/molecules-and-light/latest/molecules-and-light_en.html" },
+            { name: "Wave on a String", url: "https://phet.colorado.edu/sims/html/wave-on-a-string/latest/wave-on-a-string_en.html" },
+            { name: "pH Scale", url: "https://phet.colorado.edu/sims/html/ph-scale/latest/ph-scale_en.html" },
+            { name: "Under Pressure", url: "https://phet.colorado.edu/sims/html/under-pressure/latest/under-pressure_en.html" },
+            { name: "Gravity Force Lab", url: "https://phet.colorado.edu/sims/html/gravity-force-lab/latest/gravity-force-lab_en.html" },
+            { name: "Balloons and Static Electricity", url: "https://phet.colorado.edu/sims/html/balloons-and-static-electricity/latest/balloons-and-static-electricity_en.html" }
+          ]
+        }
+      }
+    };
+
+    // -----------------------------------------
+    // 2. Video Content Data (From Code 2)
+    // -----------------------------------------
+    const videoData = {
+      marathiContent: {
+        title: "Marathi Video Content",
+        classes: {
+          "Class 12": {
+            "Marathi": [
+              { name: " 1. वेगवशता ", url: "https://www.youtube.com/embed/6hjyTESAizk" },
+              { name: " 2. रोज मातीत", url: "https://www.youtube.com/embed/UUiUbKiRRDo" },
+              { name: " 3. आयुष्य... आनंदाचा उत्सव ", url: "https://www.youtube.com/embed/cOQFqqZvK3k" },
+              { name: " 4. रे थांब जरा आषाढघना ", url: "https://www.youtube.com/embed/AhkIv8r8Slc" },
+              { name: " 5. वीरांना सलामी ", url: "https://www.youtube.com/embed/xlq-VEcc9Ko" },
+              { name: " 6. रंग माझा वेगळा ", url: "https://www.youtube.com/embed/FroxTrl8CUY" },
+              { name: " 7. विंचू चावला ", url: "https://www.youtube.com/embed/C9gwDwY4ss4" },
+              { name: " 8. रेशीमबंध ", url: "https://www.youtube.com/embed/y6BbBOvBOb4" },
+              { name: " 9. समुद्र कोंडून पडलाय ", url: "https://www.youtube.com/embed/sb1Y_fBFlfY" },
+              { name: " 10. दंतकथा", url: "https://www.youtube.com/embed/AW4llINthqI" },
+              { name: " 11. आरशातली स्त्री ", url: "https://www.youtube.com/embed/qHx7v-opJqk" },
+              { name: " 12. रंगरेषा व्यंगरेषा ", url: "https://www.youtube.com/embed/bR0PMx_Jjec" }
+            ],
+            "Science": []
+          },
+          "Class 11": {
+            "Marathi": [
+              { name: " स्वतंत्रतेचे स्तोत्र ", url: "https://www.youtube.com/embed/GEOazmjaiZA" },
+              { name: " 1. मामू ", url: "https://www.youtube.com/embed/zuMjwuAzSKQ" },
+              { name: " 2. प्राणसई ", url: "https://www.youtube.com/embed/_R_VK1sGloQ" },
+              { name: " 3. अशी पुस्तकं ", url: "https://www.youtube.com/embed/IuRaQsycswI" },
+              { name: " 4. झाडांच्या मनात जाऊ ", url: "https://www.youtube.com/embed/gBz3ltcLwZs" },
+              { name: " 5. परिमळ ", url: "https://www.youtube.com/embed/_R_VK1sGloQ" },
+              { name: " 7. माणूस बांधूया ", url: "https://www.youtube.com/embed/75slA01eosE" },
+              { name: " 8. ऐसी अक्षरे रसिके ", url: "https://www.youtube.com/embed/tDztnmqQlKo" },
+              { name: " 11. वाङ्मयीन लेण्यांचा शिल्पकार ", url: "https://www.youtube.com/embed/p8U_83Cox8Q" },
+              { name: " 12. पैंजण ", url: "https://www.youtube.com/embed/QTSHYAN0FeU" }
+            ],
+            "Science": []
+          },
+          "Class 10": {
+            "Marathi": [
+              { name: " 1 जय जय हे भारत देशा (jay jay he bharat deshya)", url: "https://www.youtube.com/embed/oYL_XxTOyvg" },
+              { name: " 2 बोलतो मराठी (bolato Marathi)", url: "https://www.youtube.com/embed/YJ7w2Aktwpk" },
+              { name: " 3 आजी: कुटुंबाचं आगळ (Aaji kutumbach aagal)", url: "https://www.youtube.com/embed/Dj1r-ZKLy-4" },
+              { name: " 4 उत्तम लक्षण (uttam lakshan)", url: "https://www.youtube.com/embed/s9SKF9bl3e4" },
+              { name: " 5 वसंत हृदय चैत्र (vasant hruday chitra)", url: "https://www.youtube.com/embed/7BuJHiqshmo" },
+              { name: " 6 वस्तू (vastu)", url: "https://www.youtube.com/embed/sMhlahZbCAY" },
+              { name: " 7 गवताचे पाते (gavatache pate)", url: "https://www.youtube.com/embed/ccfDgjVZDhk" },
+              { name: " 8 वाट पाहताना (vat pahatana)", url: "https://www.youtube.com/embed/DFZGu4EVZdY" },
+              { name: " 9 आश्वासक चित्र (ashvasak chitre)", url: "https://www.youtube.com/embed/AT2GJJmNe0o" },
+              { name: " 10 आप्पांचे पत्र (appanche patra)", url: "https://www.youtube.com/embed/72RIWCJVIrg" },
+              { name: " 11 गोष्ट अरुणिमाची (goshta arunimachi)", url: "https://www.youtube.com/embed/JWP6Pu-yBKM" },
+              { name: " 12 भरतवाक्य (bharat vakya)", url: "https://www.youtube.com/embed/1HPz1NQamYg" },
+              { name: " 13 कर्ते सुधारक कर्वे (karte Sudhakar karve)", url: "https://www.youtube.com/embed/d4HMZUe0ePc" },
+              { name: " 14 काळे केस (kale kes)", url: "https://www.youtube.com/embed/A6Buwt5Ka9U" },
+              { name: " 15 खोद आणखी थोडेसे (khod ankhi thodese)", url: "https://www.youtube.com/embed/MqPG1vsX8pE" },
+              { name: " 16 आकाशी झेप घे रे (akashi zop ghe re)", url: "https://www.youtube.com/embed/9mLCF3btaUg" },
+              { name: " 17 सोनाली (sonali)", url: "https://www.youtube.com/embed/eQc_GrWgBcA" },
+              { name: " 18 निर्णय (nirnay)", url: "https://www.youtube.com/embed/9o54Ve63ft0" },
+              { name: " 19 तू झालास मूक समाजाचा नायक (tu zala muk samajacha nayak)", url: "https://www.youtube.com/embed/uwtytOyjHOQ" },
+              { name: " 20 सर्व विश्वाची व्हावे सुखी (sarv vishwachi vhave sukhi)", url: "https://www.youtube.com/embed/1IpptOzflRg" }
+            ],
+            "History": [
+              { name: "इतिहासलेखन पाश्चात्त्य परंपरा (भाग 1)", url: "https://www.youtube.com/embed/B2kHbJ6Ki5k" },
+              { name: "इतिहासलेखन पाश्चात्त्य परंपरा (भाग 2)", url: "https://www.youtube.com/embed/_-mZruD3i4U" },
+              { name: "इतिहासलेखन: भारतीय परंपरा", url: "https://www.youtube.com/embed/0ETNltb2Qj4" },
+              { name: "इतिहासलेखन: भारतीय परंपरा", url: "https://www.youtube.com/embed/KuXYfEL3e9k" },
+              { name: "उपयोजित इतिहास (भाग 1)", url: "https://www.youtube.com/embed/bNrRfOp7Vd8" },
+              { name: "उपयोजित इतिहास (भाग 2)", url: "https://www.youtube.com/embed/0Fm8jEps9AU" },
+              { name: "भारतीय कलांचा इतिहास (भाग 1)", url: "https://www.youtube.com/embed/qvSL8cFEK54" },
+              { name: "प्रसारमाध्यमे आणि इतिहास (भाग 1)", url: "https://www.youtube.com/embed/_DR_Wr0WHl0" },
+              { name: "प्रसारमाध्यमे आणि इतिहास (भाग 2)", url: "https://www.youtube.com/embed/5IzUSvQa6lc" },
+              { name: "खेळ आणि इतिहास", url: "https://www.youtube.com/embed/81_1yGCekaY" },
+              { name: "संविधानाची वाटचाल (भाग 1)", url: "https://www.youtube.com/embed/oZQ5Sxqs-eY" },
+              { name: "संविधानाची वाटचाल (भाग 2)", url: "https://www.youtube.com/embed/rAdLumXoyjY" },
+              { name: "संविधानाची वाटचाल (भाग 3)", url: "https://www.youtube.com/embed/ov-k77PY22M" },
+              { name: "निवडणूक प्रक्रिया", url: "https://www.youtube.com/embed/MAirigjOfTY" },
+              { name: "राजकीय पक्ष", url: "https://www.youtube.com/embed/WjTMHRRoREQ" },
+              { name: "सामाजिक व राजकीय चळवळी", url: "https://www.youtube.com/embed/DC1ypeXOCMY" }
+            ],
+            "Science 1": {
+              "Chapter 1": [
+                { name: "Chapter#01 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/068peW9XeBk" },
+                { name: "Chapter#01 | Topic#02 | बल व गती", url: "https://www.youtube.com/embed/E8YIi_r-ZRM" },
+                { name: "Chapter#01 | Topic#03 | वर्तुळाकार गती व अभिकेंद्री बल", url: "https://www.youtube.com/embed/LCq1pduB-g4" },
+                { name: "Chapter#01 | Topic#04 | केप्लरचे नियम", url: "https://www.youtube.com/embed/aTnWKawIusM" },
+                { name: "Chapter#01 | Topic#05 | न्युटनचा वैश्विक गुरुत्वाकर्षणाचा सिद्धांत", url: "https://www.youtube.com/embed/X_zrPpHKINA" },
+                { name: "Chapter#01 | Topic#06 | अभिकेंद्री बलाचे परिणाम", url: "https://www.youtube.com/embed/JURkysWTabw" },
+                { name: "Chapter#01 | Topic#07 | सोडविलेली उदाहरणे", url: "https://www.youtube.com/embed/i6HMF4g7cmA" },
+                { name: "Chapter#01 | Topic#08 | उदाहरण 2", url: "https://www.youtube.com/embed/44hei3XTxR4" },
+                { name: "Chapter#01 | Topic#09 | माहित आहे का तुम्हाला?", url: "https://www.youtube.com/embed/uybL0J3YPDg" },
+                { name: "Chapter#01 | Topic#10 | सोडविलेली उदाहरणे", url: "https://www.youtube.com/embed/8lJoqkrLSAs" },
+                { name: "Chapter#01 | Topic#11 | जरा डोके चालवा", url: "https://www.youtube.com/embed/Vn8ffFYCvkI" },
+                { name: "Chapter#01 | Topic#12 | गुरुत्व त्वरणाचे मूल्य", url: "https://www.youtube.com/embed/b2Z64D0O09U" },
+                { name: "Chapter#01 | Topic#13 | ‘g’ च्या मुल्यात होणारे बदल", url: "https://www.youtube.com/embed/ts3TaEZvrek" },
+                { name: "Chapter#01 | Topic#14 | वस्तूमान व वजन", url: "https://www.youtube.com/embed/jJIt46Y2C8w" },
+                { name: "Chapter#01 | Topic#15 | जरा डोके चालवा", url: "https://www.youtube.com/embed/cHXCcEV6fPA" },
+                { name: "Chapter#01 | Topic#16 | माहीत आहे का तुम्हांला? गुरूत्वीय लहरी", url: "https://www.youtube.com/embed/O0Fy0XjHHyY" },
+                { name: "Chapter#01 | Topic#17 | मुक्तपतन", url: "https://www.youtube.com/embed/cerNQgGMCr4" },
+                { name: "Chapter#01 | Topic#18 | माहीत आहे का तुम्हांला?", url: "https://www.youtube.com/embed/0TFuK3V80ls" },
+                { name: "Chapter#01 | Topic#19 | उदाहरण 2", url: "https://www.youtube.com/embed/MWzdR174-8w" },
+                { name: "Chapter#01 | Topic#20 | गुरुत्वीय स्थितीज ऊर्जा", url: "https://www.youtube.com/embed/FYAv3v9HNB4" },
+                { name: "Chapter#01 | Topic#21 | m वस्तुमान असलेल्या वस्तूची ऊर्जा", url: "https://www.youtube.com/embed/qeYlAycpLMY" }
+              ],
+              "Chapter 2": [
+                { name: "Chapter#02 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/UJxO0PX4P1Q" },
+                { name: "Chapter#02 | Topic#02 | डोबरायनरची त्रिके", url: "https://www.youtube.com/embed/9U5eH6wXDbQ" },
+                { name: "Chapter#02 | Topic#03 | सांगा पाहू", url: "https://www.youtube.com/embed/BQiheIbPWU0" },
+                { name: "Chapter#02 | Topic#04 | न्यूलँड्सच्या अष्टकांचा नियम", url: "https://www.youtube.com/embed/s0ovIX8fV8c" },
+                { name: "Chapter#02 | Topic#05 | मेंडेलीव्हची आवर्तसारणी", url: "https://www.youtube.com/embed/2T0xEgFbGFE" },
+                { name: "Chapter#02 | Topic#06 | परिचय शास्त्रज्ञांचा", url: "https://www.youtube.com/embed/QS1tZlfsCCQ" },
+                { name: "Chapter#02 | Topic#07 | मेंडेलीव्ह्च्या आवर्तसारणीतील त्रुटी", url: "https://www.youtube.com/embed/x3A0t5I5-q8" },
+                { name: "Chapter#02 | Topic#08 | आधुनिक आवर्तसारणी", url: "https://www.youtube.com/embed/0kOjNhC4r7w" },
+                { name: "Chapter#02 | Topic#09 | आधुनिक आवर्तसारणीची रचना", url: "https://www.youtube.com/embed/m-JgMdfOvfk" },
+                { name: "Chapter#02 | Topic#10 | गण व इलेक्ट्रॉन संरुपण: सांगा पाहू", url: "https://www.youtube.com/embed/03MGLeBVn28" },
+                { name: "Chapter#02 | Topic#11 | आवर्त व इलेक्ट्रॉन संरुपण", url: "https://www.youtube.com/embed/gT9zmhQ1F8M" },
+                { name: "Chapter#02 | Topic#12 | आधुनिक आवर्तसारणीतील आवर्ती कल", url: "https://www.youtube.com/embed/3npE1fsr7h4" },
+                { name: "Chapter#02 | Topic#13 | अणु आकारमान", url: "https://www.youtube.com/embed/JRMnJBPUFVE" },
+                { name: "Chapter#02 | Topic#14 | धातू-अधातू गुणधर्म", url: "https://www.youtube.com/embed/siBkor_x6uo" },
+                { name: "Chapter#02 | Topic#15 | जरा डोके चालवा", url: "https://www.youtube.com/embed/RXRlcLv-S04" }
+              ],
+              "Chapter 3": [
+                { name: "Chapter#03 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/tgmJckVzF1o" },
+                { name: "Chapter#03 | Topic#02 | करून पहा", url: "https://www.youtube.com/embed/8d-gnLSnqTM" },
+                { name: "Chapter#03 | Topic#03 | रासायनिक समीकरणे", url: "https://www.youtube.com/embed/u-0_CdpE118" },
+                { name: "Chapter#03 | Topic#04 | हे करून पहा", url: "https://www.youtube.com/embed/Da814le-EAY" },
+                { name: "Chapter#03 | Topic#05 | रासायनिक समीकरण संतुलित करण्याच्या पायऱ्या", url: "https://www.youtube.com/embed/ea57xGJwH4o" },
+                { name: "Chapter#03 | Topic#06 | जरा डोके चालवा", url: "https://www.youtube.com/embed/8p8GH9aFwhA" },
+                { name: "Chapter#03 | Topic#07 | रासायनिक अभिक्रियेचे प्रकार", url: "https://www.youtube.com/embed/6ZTKJJK-Zos" },
+                { name: "Chapter#03 | Topic#08 | अपघटन अभिक्रिया", url: "https://www.youtube.com/embed/k6xHS-HiM5M" },
+                { name: "Chapter#03 | Topic#09 | विस्थापन अभिक्रिया", url: "https://www.youtube.com/embed/eV-8iZGomZY" },
+                { name: "Chapter#03 | Topic#10 | उष्माग्राही आणि उष्मादायी प्रक्रिया", url: "https://www.youtube.com/embed/9gXd9ri-4zo" },
+                { name: "Chapter#03 | Topic#11 | रासायनिक अभिक्रियेचा दर", url: "https://www.youtube.com/embed/_ifQu4QkwxQ" },
+                { name: "Chapter#03 | Topic#12 | रासायनिक अभिक्रियेच्या दरावर परिणाम घटक", url: "https://www.youtube.com/embed/A4kTY4U70MQ" },
+                { name: "Chapter#03 | Topic#13 | माहीत आहे का तुम्हांला?", url: "https://www.youtube.com/embed/gS1N2krBnco" },
+                { name: "Chapter#03 | Topic#14 | जरा डोके चालवा", url: "https://www.youtube.com/embed/Ff4t4ZIp53A" },
+                { name: "Chapter#03 | Topic#15 | जरा डोके चालवा", url: "https://www.youtube.com/embed/L7MjAfxdtbo" },
+                { name: "Chapter#03 | Topic#16 | माहीत आहे का तुम्हांला?", url: "https://www.youtube.com/embed/hDf9tMs7klw" }
+              ],
+              "Chapter 4": [
+                { name: "Chapter#04 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/Mzmo2TsD8WA" },
+                { name: "Chapter#04 | Topic#02 | विद्युतपरिपथामध्ये ऊर्जेचे स्थानांतरण", url: "https://www.youtube.com/embed/EwgIMYAtQGk" },
+                { name: "Chapter#04 | Topic#03 | विद्युतधारेचे औष्णिक परिणाम", url: "https://www.youtube.com/embed/mskREJXDcHE" },
+                { name: "Chapter#04 | Topic#04 | माहीत आहे का तुम्हांला?", url: "https://www.youtube.com/embed/ABcoexBTwb4" },
+                { name: "Chapter#04 | Topic#05 | विद्युतधारेचे चुंबकीय परिणाम", url: "https://www.youtube.com/embed/91QmwsaTH7I" },
+                { name: "Chapter#04 | Topic#06 | हे करून पहा", url: "https://www.youtube.com/embed/jUlYCsoxs_g" },
+                { name: "Chapter#04 | Topic#07 | चुंबकीय क्षेत्र", url: "https://www.youtube.com/embed/xUOks_vXE9g" },
+                { name: "Chapter#04 | Topic#08 | विद्युतवाहकावरील बल", url: "https://www.youtube.com/embed/yPX-V3OwIBI" },
+                { name: "Chapter#04 | Topic#09 | विद्युतचलित्र", url: "https://www.youtube.com/embed/5hTsq9oQlJg" },
+                { name: "Chapter#04 | Topic#10 | माहिती मिळवा", url: "https://www.youtube.com/embed/-I_0sHVD8eQ" },
+                { name: "Chapter#04 | Topic#11 | फॅरेडेचा विद्युत प्रवर्तनाचा नियम", url: "https://www.youtube.com/embed/e7jOESveDuk" },
+                { name: "Chapter#04 | Topic#12 | विद्युत जनित्र", url: "https://www.youtube.com/embed/HMm5rEStNTg" }
+              ],
+              "Chapter 5": [
+                { name: "Chapter#05 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/j-B0ZeTxAUs" },
+                { name: "Chapter#05 | Topic#02 | करून पाहूया", url: "https://www.youtube.com/embed/0hJe7NYFZiQ" },
+                { name: "Chapter#05 | Topic#03 | पुनर्हिमायन", url: "https://www.youtube.com/embed/NSgUnmscJak" },
+                { name: "Chapter#05 | Topic#04 | सांगा पाहू", url: "https://www.youtube.com/embed/3X4xUKbT5Ak" },
+                { name: "Chapter#05 | Topic#05 | होपचे उपकरण", url: "https://www.youtube.com/embed/04orNDHHrPw" },
+                { name: "Chapter#05 | Topic#06 | दवबिंदू तापमान आणि आर्द्रता", url: "https://www.youtube.com/embed/DTe3hPu--zQ" },
+                { name: "Chapter#05 | Topic#07 | उष्णतेचे एकक", url: "https://www.youtube.com/embed/g75Xyd7I_r8" },
+                { name: "Chapter#05 | Topic#08 | पदार्थाने शोषून घेतलेली उष्णता काढण्याचे सूत्र", url: "https://www.youtube.com/embed/sglBxgSzZ-0" },
+                { name: "Chapter#05 | Topic#09 | सोडविलेली उदाहरणे", url: "https://www.youtube.com/embed/uaUImmx8yNo" }
+              ],
+              "Chapter 6": [
+                { name: "Chapter#06 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/F34kgy10TSE" },
+                { name: "Chapter#06 | Topic#02 | काचेच्या लादीतूनदेखील प्रकाशाचे अपवर्तन", url: "https://www.youtube.com/embed/ZsF1a1SStyk" },
+                { name: "Chapter#06 | Topic#03 | अपवर्तनाचे नियम", url: "https://www.youtube.com/embed/nDh3NsVXxlc" },
+                { name: "Chapter#06 | Topic#04 | वेगवेगळ्या माध्यमांत प्रकाशाचे अपवर्तन", url: "https://www.youtube.com/embed/YR-hEUpQHX0" },
+                { name: "Chapter#06 | Topic#05 | ताऱ्यांचे लुकलुकणे", url: "https://www.youtube.com/embed/pOCh-OjsLlA" },
+                { name: "Chapter#06 | Topic#06 | ताऱ्याची आभासी स्थिती", url: "https://www.youtube.com/embed/kmGPvq-CB10" },
+                { name: "Chapter#06 | Topic#07 | प्रकाशाचे अपस्करण", url: "https://www.youtube.com/embed/fcd3m-Ylht8" },
+                { name: "Chapter#06 | Topic#08 | आंशिक व पूर्ण आंतरिक परावर्तन", url: "https://www.youtube.com/embed/UZPz9VtsvfQ" }
+              ],
+              "Chapter 7": [
+                { name: "Chapter#07 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/UwcIPBVFUoE" },
+                { name: "Chapter#07 | Topic#02 | बहिर्वक्र व अंतर्गोल भिंगाचे काटछेद", url: "https://www.youtube.com/embed/FLZNvyFUp24" },
+                { name: "Chapter#07 | Topic#03 | अपवर्तित किरणांचे रेखन", url: "https://www.youtube.com/embed/ikPDOnCIjoo" },
+                { name: "Chapter#07 | Topic#04 | बहिर्गोल भिंगाद्वारे मिळणारी वास्तव प्रतिमा", url: "https://www.youtube.com/embed/ZmdAqfZ5Or0" },
+                { name: "Chapter#07 | Topic#05 | थोडे आठवा", url: "https://www.youtube.com/embed/AcxUiDiR_Vg" },
+                { name: "Chapter#07 | Topic#06 | सोडवलेली उदाहरणे उदा 1", url: "https://www.youtube.com/embed/hPyavcVg6G4" },
+                { name: "Chapter#07 | Topic#07 | मानवी डोळा व त्यातील भिंगाचे कार्य", url: "https://www.youtube.com/embed/BIKO8Uk31wo" },
+                { name: "Chapter#07 | Topic#08 | करून पहा", url: "https://www.youtube.com/embed/uup3sGwMZm4" },
+                { name: "Chapter#07 | Topic#09 | दूरदृष्टिता", url: "https://www.youtube.com/embed/u9o_tVG2rCM" },
+                { name: "Chapter#07 | Topic#10 | अंतर्गोल भिंगांचे उपयोग", url: "https://www.youtube.com/embed/Wok4X6Bwjp8" },
+                { name: "Chapter#07 | Topic#11 | बहिर्गोल भिंगाचे उपयोग", url: "https://www.youtube.com/embed/hYczsVDVt6w" },
+                { name: "Chapter#07 | Topic#12 | हे करून पहा", url: "https://www.youtube.com/embed/F5SpsK7a5As" }
+              ],
+              "Chapter 8": [
+                { name: "Chapter#08 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/QrRnUIe6amU" },
+                { name: "Chapter#08 | Topic#02 | करून पहा", url: "https://www.youtube.com/embed/sPNEP-6waP4" },
+                { name: "Chapter#08 | Topic#03 | धातूंची आम्लाबरोबर होणारी अभिक्रिया", url: "https://www.youtube.com/embed/eOMyAILfacw" },
+                { name: "Chapter#08 | Topic#04 | धातूंची अभिक्रियाशीलता श्रेणी", url: "https://www.youtube.com/embed/4-viHAuphHo" },
+                { name: "Chapter#08 | Topic#05 | आयनिक संयुगे", url: "https://www.youtube.com/embed/DBwq0u2Q8yE" },
+                { name: "Chapter#08 | Topic#06 | धातूविज्ञान", url: "https://www.youtube.com/embed/I6TlYqx7fPY" },
+                { name: "Chapter#08 | Topic#07 | चुंबकीय विलगीकरण पद्धत", url: "https://www.youtube.com/embed/P0SihQwaSoA" },
+                { name: "Chapter#08 | Topic#08 | माहीत आहे का तुम्हाला", url: "https://www.youtube.com/embed/o0ysoF0t6Cs" },
+                { name: "Chapter#08 | Topic#09 | अॅल्युमिनिअमचे निष्कर्षण", url: "https://www.youtube.com/embed/SLvjd8nnXKo" },
+                { name: "Chapter#08 | Topic#10 | मध्यम अभिक्रियाशील धातूंचे निष्कर्षण", url: "https://www.youtube.com/embed/KwlprcMFxK8" },
+                { name: "Chapter#08 | Topic#11 | धातूंचे शुद्धीकरण", url: "https://www.youtube.com/embed/CGDsMuHyi0k" },
+                { name: "Chapter#08 | Topic#12 | क्षरण रोखण्याचे प्रकार", url: "https://www.youtube.com/embed/ujlexxktmN8" }
+              ],
+              "Chapter 9": [
+                { name: "Chapter#09 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/grQArWZLb0Q" },
+                { name: "Chapter#09 | Topic#02 | सांगा पाहू", url: "https://www.youtube.com/embed/aWTFhr9HEew" },
+                { name: "Chapter#09 | Topic#03 | सहसंयुज बंध", url: "https://www.youtube.com/embed/otgUp12OPI4" },
+                { name: "Chapter#09 | Topic#04 | कार्बन एक वेगळे मूलद्रव्य", url: "https://www.youtube.com/embed/5RpbtcjPLwg" },
+                { name: "Chapter#09 | Topic#05 | हायड्रोकार्बन: संपृक्त व असंपृक्त", url: "https://www.youtube.com/embed/1F2GnudYbwA" },
+                { name: "Chapter#09 | Topic#06 | कार्बन अणूंच्या सरलशृंखला", url: "https://www.youtube.com/embed/MStpc2dYJc4" },
+                { name: "Chapter#09 | Topic#07 | कार्बनी संयुगांमधील क्रियात्मक गट", url: "https://www.youtube.com/embed/09i0Wxg1zCo" },
+                { name: "Chapter#09 | Topic#08 | जरा डोके चालवा", url: "https://www.youtube.com/embed/WH0idxgsNUw" },
+                { name: "Chapter#09 | Topic#09 | कार्बनी संयुगांच्या नामकरण पद्धती", url: "https://www.youtube.com/embed/5DvXBPAUdm4" },
+                { name: "Chapter#09 | Topic#10 | कार्बनी संयुगांची सामान्य नावे", url: "https://www.youtube.com/embed/n82OFZMK-vA" },
+                { name: "Chapter#09 | Topic#11 | ऑक्सीडीकरण", url: "https://www.youtube.com/embed/zQfVA6E3sEI" },
+                { name: "Chapter#09 | Topic#12 | समावेशक अभिक्रिया", url: "https://www.youtube.com/embed/tqDkP5XpbCc" },
+                { name: "Chapter#09 | Topic#13 | महत्त्वाची कार्बनी संयुगे", url: "https://www.youtube.com/embed/jLUCZHiukoA" },
+                { name: "Chapter#09 | Topic#14 | विज्ञान कुपी", url: "https://www.youtube.com/embed/RCrjIXeM-5A" },
+                { name: "Chapter#09 | Topic#15 | ईथेनॉइक अॅसिडचे रासायनिक गुणधर्म", url: "https://www.youtube.com/embed/dDd6eDqp7zU" },
+                { name: "Chapter#09 | Topic#16 | ईस्टरीभवन अभिक्रिया", url: "https://www.youtube.com/embed/3E8zgR22n0M" },
+                { name: "Chapter#09 | Topic#17 | बहुवारिके", url: "https://www.youtube.com/embed/EmWEFr_oNvU" }
+              ],
+              "Chapter 10": [
+                { name: "Chapter#10 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/1Au-2gl649g" },
+                { name: "Chapter#10 | Topic#02 | माहिती आहे का तुम्हांला?", url: "https://www.youtube.com/embed/9SXfjFbfOoM" },
+                { name: "Chapter#10 | Topic#03 | अवकाश मोहिमांची गरज व महत्त्व", url: "https://www.youtube.com/embed/fyri_vC1U_M" },
+                { name: "Chapter#10 | Topic#04 | उपग्रहांचे प्रकार", url: "https://www.youtube.com/embed/2GUY3Nte3cs" },
+                { name: "Chapter#10 | Topic#05 | कृत्रिम उपग्रहाच्या भ्रमण कक्षा", url: "https://www.youtube.com/embed/L3Ob50EALiU" },
+                { name: "Chapter#10 | Topic#06 | कक्षांचे वर्गीकरण: 1) उच्च कक्षा", url: "https://www.youtube.com/embed/G5PQpJ9mO6w" },
+                { name: "Chapter#10 | Topic#07 | सोडवलेली उदाहरणे उदा 1 आणि 2", url: "https://www.youtube.com/embed/VVM_ayzH6E8" },
+                { name: "Chapter#10 | Topic#08 | उपग्रह प्रक्षेपक", url: "https://www.youtube.com/embed/d3uXQWjoN3Y" },
+                { name: "Chapter#10 | Topic#09 | पृथ्वीपासून दूर गेलेल्या अवकाश मोहिमा", url: "https://www.youtube.com/embed/6egQewC59rk" },
+                { name: "Chapter#10 | Topic#10 | चंद्रमोहिमा", url: "https://www.youtube.com/embed/YFBkMrW3-wA" },
+                { name: "Chapter#10 | Topic#11 | भारत व अवकाश तंत्रज्ञान", url: "https://www.youtube.com/embed/v2qipBcn2CE" }
+              ]
+            },
+            "Science 2": {
+              "Chapter 1": [
+                { name: "Chapter#01 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/1dTZb-9sLSk" },
+                { name: "Chapter#01 | Topic#02 | डी.एन.ए व आर.एन.ए", url: "https://www.youtube.com/embed/Fw3vj8ir62E" },
+                { name: "Chapter#01 | Topic#03 | प्रतिलेखन, भाषांतरण व स्थानांतरण", url: "https://www.youtube.com/embed/vLD-Jd6z8VM" },
+                { name: "Chapter#01 | Topic#04 | उत्परिवर्तन", url: "https://www.youtube.com/embed/V71JsCfA1s8" },
+                { name: "Chapter#01 | Topic#05 | उत्क्रांती", url: "https://www.youtube.com/embed/X_cU7LZhgC8" },
+                { name: "Chapter#01 | Topic#06 | उत्क्रांतीचे पुरावे", url: "https://www.youtube.com/embed/YL-oI1cez54" },
+                { name: "Chapter#01 | Topic#07 | पुराजीव विषयक पुरावे", url: "https://www.youtube.com/embed/kto0A2J2wv8" },
+                { name: "Chapter#01 | Topic#08 | डार्विनचा नैसर्गिक निवडीचा सिद्धांत", url: "https://www.youtube.com/embed/9BTNJDxhLyQ" },
+                { name: "Chapter#01 | Topic#09 | जातिउद्भव", url: "https://www.youtube.com/embed/idHK4Y82BQQ" }
+              ],
+              "Chapter 2": [
+                { name: "Chapter#02 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/HC59EN5JibA" },
+                { name: "Chapter#02 | Topic#02 | सजीव आणि जीवनक्रिया", url: "https://www.youtube.com/embed/qcbhJbNm4ds" },
+                { name: "Chapter#02 | Topic#03 | सजीव व ऊर्जानिर्मिती", url: "https://www.youtube.com/embed/7XaORmgclls" },
+                { name: "Chapter#02 | Topic#04 | ATP", url: "https://www.youtube.com/embed/YzuqtEqhROw" },
+                { name: "Chapter#02 | Topic#05 | सजीवांमध्ये होणारे विनॉक्सीश्वसन", url: "https://www.youtube.com/embed/ZJ7zqoJGP2g" },
+                { name: "Chapter#02 | Topic#06 | विविध अन्नघटकांपासून मिळणारी ऊर्जा", url: "https://www.youtube.com/embed/0eTXWiF4VfY" },
+                { name: "Chapter#02 | Topic#07 | जीवनसत्त्वे", url: "https://www.youtube.com/embed/ozSlTkS1lM8" },
+                { name: "Chapter#02 | Topic#08 | पेशीविभाजन: एक आवश्यक जीवनप्रक्रिया", url: "https://www.youtube.com/embed/oSH6G5N00mY" },
+                { name: "Chapter#02 | Topic#09 | सूत्री पेशीविभाजन", url: "https://www.youtube.com/embed/XqXxl1av3Lg" },
+                { name: "Chapter#02 | Topic#10 | अर्धसूत्री विभाजन", url: "https://www.youtube.com/embed/jlWZTDIW1Cc" }
+              ],
+              "Chapter 3": [
+                { name: "Chapter#03 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/ab_X8FuvAKQ" },
+                { name: "Chapter#03 | Topic#02 | अलैंगिक प्रजनन", url: "https://www.youtube.com/embed/awyR-7Z5L-I" },
+                { name: "Chapter#03 | Topic#03 | आ. बहुपेशीय सजीवांमधील अलैंगिक प्रजनन", url: "https://www.youtube.com/embed/HJYlodZK-9c" },
+                { name: "Chapter#03 | Topic#04 | लैंगिक प्रजनन", url: "https://www.youtube.com/embed/9ZckVMyByHg" },
+                { name: "Chapter#03 | Topic#05 | अ. वनस्पतींमधील लैंगिक प्रजनन", url: "https://www.youtube.com/embed/eQxUn8XWfAQ" },
+                { name: "Chapter#03 | Topic#06 | परागीभवनाच्या पद्धती", url: "https://www.youtube.com/embed/Uyg0DYVOQHM" },
+                { name: "Chapter#03 | Topic#07 | मानवी पुरुष प्रजनन संस्था", url: "https://www.youtube.com/embed/tZZedqmZTmk" },
+                { name: "Chapter#03 | Topic#08 | युग्मक निर्मिती", url: "https://www.youtube.com/embed/75Wchnnhs4Y" },
+                { name: "Chapter#03 | Topic#09 | विकास व जन्म", url: "https://www.youtube.com/embed/9mncq2QGWXE" },
+                { name: "Chapter#03 | Topic#10 | प्रजनन आणि आधुनिक तंत्रज्ञान", url: "https://www.youtube.com/embed/RsUQCebnq44" },
+                { name: "Chapter#03 | Topic#11 | जुळे", url: "https://www.youtube.com/embed/Yuja2iYJWK8" }
+              ],
+              "Chapter 4": [
+                { name: "Chapter#04 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/yGZ2LE1RXfM" },
+                { name: "Chapter#04 | Topic#02 | परिसंस्था", url: "https://www.youtube.com/embed/ou2ei3Zo31c" },
+                { name: "Chapter#04 | Topic#03 | पर्यावरण व परिसंस्था संबंध", url: "https://www.youtube.com/embed/cGWwjskWLKs" },
+                { name: "Chapter#04 | Topic#04 | पर्यावरण संवर्धन", url: "https://www.youtube.com/embed/Z4rZNZ8qfdU" },
+                { name: "Chapter#04 | Topic#05 | पर्यावरणीय प्रदूषण", url: "https://www.youtube.com/embed/MD_0bzVkQUA" },
+                { name: "Chapter#04 | Topic#06 | किरणोत्सारी प्रदूषण", url: "https://www.youtube.com/embed/zKVDJrK9LYw" },
+                { name: "Chapter#04 | Topic#07 | पर्यावरण संवर्धन: आपली सामाजिक जबाबदारी", url: "https://www.youtube.com/embed/VsjvFk3B6a4" },
+                { name: "Chapter#04 | Topic#08 | एका लहान माणसाची मोठी गोष्ट", url: "https://www.youtube.com/embed/s0_60dfogeo" },
+                { name: "Chapter#04 | Topic#09 | जैवविविधतेच्या संवर्धनासाठी उपाय", url: "https://www.youtube.com/embed/tIyVD2xA9Fo" },
+                { name: "Chapter#04 | Topic#10 | धोक्यात आलेली देशातील तीन वारसास्थळे", url: "https://www.youtube.com/embed/_17UeaiaM_8" }
+              ],
+              "Chapter 5": [
+                { name: "Chapter#05 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/IbzNW4BDL78" },
+                { name: "Chapter#05 | Topic#02 | औष्णिक ऊर्जेवर आधारित विद्युत ऊर्जा निर्मिती केंद्र", url: "https://www.youtube.com/embed/CA3-hq4mffk" },
+                { name: "Chapter#05 | Topic#03 | अणु ऊर्जेवर आधारित विद्युतऊर्जा निर्मिती केंद्र", url: "https://www.youtube.com/embed/upvjQoq1XF8" },
+                { name: "Chapter#05 | Topic#04 | नैसर्गिक वायू ऊर्जेवर आधारित विद्युत केंद्र", url: "https://www.youtube.com/embed/b_r9f541d7c" },
+                { name: "Chapter#05 | Topic#05 | पर्यावरण स्नेही ऊर्जेकडे", url: "https://www.youtube.com/embed/TnwH3S2ZfMA" },
+                { name: "Chapter#05 | Topic#06 | पवन ऊर्जेवर आधारित विद्युत निर्मिती", url: "https://www.youtube.com/embed/eCiGz1jhFdQ" },
+                { name: "Chapter#05 | Topic#07 | सौर विद्युत घट", url: "https://www.youtube.com/embed/_02dCEstzNI" },
+                { name: "Chapter#05 | Topic#08 | सौर औष्णिक विद्युत केंद्र", url: "https://www.youtube.com/embed/YOaBrp2-rUA" }
+              ],
+              "Chapter 6": [
+                { name: "Chapter#06 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/fF_u27SANDY" },
+                { name: "Chapter#06 | Topic#02 | प्राणी वर्गीकरणाची पारंपरिक पद्धत", url: "https://www.youtube.com/embed/Zka8ebQes3Q" },
+                { name: "Chapter#06 | Topic#03 | प्राणी वर्गीकरणाच्या नवीन पद्धती", url: "https://www.youtube.com/embed/V23s-qwfx6k" },
+                { name: "Chapter#06 | Topic#04 | शारीरिक सममिती", url: "https://www.youtube.com/embed/v3Jf_d3orM4" },
+                { name: "Chapter#06 | Topic#05 | प्राणीसंघाचे आधुनिक वर्गीकरण", url: "https://www.youtube.com/embed/dDE-dsZYLPY" },
+                { name: "Chapter#06 | Topic#06 | चपट्या कृमींचा संघ, गोलकृमी प्राणीसंघ", url: "https://www.youtube.com/embed/RWW6XjbYKvY" },
+                { name: "Chapter#06 | Topic#07 | प्राणीसंघाचे आधुनिक वर्गीकरण", url: "https://www.youtube.com/embed/kEPMtFzpPPU" },
+                { name: "Chapter#06 | Topic#08 | मृदुकाय प्राणीसंघ, कंटकचर्मी प्राणीसंघ", url: "https://www.youtube.com/embed/rER91OEB5kY" },
+                { name: "Chapter#06 | Topic#09 | अर्धसमपृष्ठरज्जू प्राणीसंघ", url: "https://www.youtube.com/embed/ikL0kdeUNz4" },
+                { name: "Chapter#06 | Topic#10 | उपसंघ – पृष्ठवंशीय प्राण्याचे सहा वर्ग", url: "https://www.youtube.com/embed/y02xgNQ5eiw" }
+              ],
+              "Chapter 7": [
+                { name: "Chapter#07 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/YGiG5DkSWpA" },
+                { name: "Chapter#07 | Topic#02 | उत्पादने", url: "https://www.youtube.com/embed/2wo52RmwoSY" },
+                { name: "Chapter#07 | Topic#03 | प्रोबायोटिक्स", url: "https://www.youtube.com/embed/cI0G3x0zsFQ" },
+                { name: "Chapter#07 | Topic#04 | पेयनिर्मिती", url: "https://www.youtube.com/embed/a20eQS7v4tQ" },
+                { name: "Chapter#07 | Topic#05 | प्रतिजैविके", url: "https://www.youtube.com/embed/jYrrFlI2mdM" },
+                { name: "Chapter#07 | Topic#06 | सूक्ष्मजैविक प्रदूषण नियंत्रण", url: "https://www.youtube.com/embed/4tmJB3XoKTs" },
+                { name: "Chapter#07 | Topic#07 | स्वच्छ तंत्रज्ञान", url: "https://www.youtube.com/embed/zDVovzA8BWA" },
+                { name: "Chapter#07 | Topic#08 | सूक्ष्मजीव व शेती", url: "https://www.youtube.com/embed/bTVfpESdnb8" }
+              ],
+              "Chapter 8": [
+                { name: "Chapter#08 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/UmOwTwiqhF4" },
+                { name: "Chapter#08 | Topic#02 | मूलपेशी", url: "https://www.youtube.com/embed/DC3ETZbNtSY" },
+                { name: "Chapter#08 | Topic#03 | अवयव प्रत्यारोपण", url: "https://www.youtube.com/embed/pUYLRZD2Xd4" },
+                { name: "Chapter#08 | Topic#04 | जैवतंत्रज्ञान", url: "https://www.youtube.com/embed/q5nv_h6RjP0" },
+                { name: "Chapter#08 | Topic#05 | जैवतंत्रज्ञानाचे व्यावहारिक उपयोग", url: "https://www.youtube.com/embed/0p2-X2fy9Pw" },
+                { name: "Chapter#08 | Topic#06 | मानवी आरोग्य", url: "https://www.youtube.com/embed/U5HYg-KnIBQ" },
+                { name: "Chapter#08 | Topic#07 | क्लोनिंग", url: "https://www.youtube.com/embed/5XsPY24kb1A" },
+                { name: "Chapter#08 | Topic#08 | पर्यावरण आणि जैवतंत्रज्ञान", url: "https://www.youtube.com/embed/x0mt-XWAUn0" },
+                { name: "Chapter#08 | Topic#09 | समुद्रावरील तेल गळतीची स्वच्छता", url: "https://www.youtube.com/embed/2Un9Lb1USjM" },
+                { name: "Chapter#08 | Topic#10 | खते", url: "https://www.youtube.com/embed/nAUWIxpU2pA" }
+              ],
+              "Chapter 9": [
+                { name: "Chapter#09 | Topic#01 | प्रस्तावना, सामाजिक आरोग्य", url: "https://www.youtube.com/embed/aGinQJXz2Eo" },
+                { name: "Chapter#09 | Topic#02 | सामाजिक आरोग्य धोक्यात आणणारे घटक", url: "https://www.youtube.com/embed/Bxal4mLNFYo" },
+                { name: "Chapter#09 | Topic#03 | प्रसारमाध्यमे व अत्याधुनिक तंत्रज्ञानाचा अतिवापर", url: "https://www.youtube.com/embed/POCt6BAADEQ" },
+                { name: "Chapter#09 | Topic#04 | थोडे आठवा", url: "https://www.youtube.com/embed/9xOpryAwSm0" },
+                { name: "Chapter#09 | Topic#05 | सायबर गुन्हा, माहिती तंत्रज्ञान कायदा 2000", url: "https://www.youtube.com/embed/Ns53kqzLcxo" },
+                { name: "Chapter#09 | Topic#06 | ताणतणाव व्यवस्थापन", url: "https://www.youtube.com/embed/prATq4c_ryE" }
+              ],
+              "Chapter 10": [
+                { name: "Chapter#10 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/IbXhjnAYRk0" },
+                { name: "Chapter#10 | Topic#02 | आपत्ती", url: "https://www.youtube.com/embed/XehTA0L1bSI" },
+                { name: "Chapter#10 | Topic#03 | सांगा पाहू", url: "https://www.youtube.com/embed/c5WFoETdeY0" },
+                { name: "Chapter#10 | Topic#04 | आपत्तींचे परिणाम", url: "https://www.youtube.com/embed/a_MuqZpbymQ" },
+                { name: "Chapter#10 | Topic#05 | आपत्तींचे स्वरूप व व्याप्ती", url: "https://www.youtube.com/embed/DeIkredb6nc" },
+                { name: "Chapter#10 | Topic#06 | आपत्तीचे संवेदनशील भाग", url: "https://www.youtube.com/embed/Aj7y5OfnOBo" },
+                { name: "Chapter#10 | Topic#07 | माहीत आहे का तुम्हांला?", url: "https://www.youtube.com/embed/5FVwACvN11s" },
+                { name: "Chapter#10 | Topic#08 | आपत्ती व्यवस्थापनाची उद्दिष्टे", url: "https://www.youtube.com/embed/xYg55tf0GBw" },
+                { name: "Chapter#10 | Topic#09 | निरीक्षण करा", url: "https://www.youtube.com/embed/tQcV-DNsuww" },
+                { name: "Chapter#10 | Topic#10 | जिल्हा आपत्ती व्यवस्थापन प्राधिकरण", url: "https://www.youtube.com/embed/WhNzEWyXMB4" },
+                { name: "Chapter#10 | Topic#11 | विचार करा", url: "https://www.youtube.com/embed/F8LZRiEDp2A" },
+                { name: "Chapter#10 | Topic#12 | प्रथमोपचार पेटी", url: "https://www.youtube.com/embed/CmEtCUis0tY" }
+              ]
+            }
+          },
+          "Class 9": {
+            "Marathi": [
+              { name: "१. वंद्य 'वन्दे मातरम्' (गीत)", url: "https://www.youtube.com/embed/NLDAjWOnoC4" },
+              { name: "२. संतवाणी", url: "" },
+              { name: "३. कीर्ती कठीयाचा दृष्टान्त", url: "https://www.youtube.com/embed/pyH_c8WD-6Q" },
+              { name: "४. नात्यांची घट्ट वीण", url: "https://www.youtube.com/embed/bz1_TlX2_Zc" },
+              { name: "५. एक होती समई", url: "https://www.youtube.com/embed/xHDvkjvhmBs" },
+              { name: "६. या झोपडीत माझ्या (कविता)", url: "https://www.youtube.com/embed/mEpY2CLQM54" },
+              { name: "७. दुपार", url: "https://www.youtube.com/embed/9IzibuHQYQQ" },
+              { name: "८. अभियंत्यांचे दैवत-डॉ. विश्वेश्वरय्या", url: "https://www.youtube.com/embed/fJmx-ORbPkQ" },
+              { name: "९. मी वाचवतोय (कविता)", url: "https://www.youtube.com/embed/7glEyNQQsak" },
+              { name: "१०. यंत्रांनी केलं बंड", url: "" }
+            ],
+
+          "History": {
+              "Chapter 1": [
+                { name: "Chapter#01 | Topic#01 | प्रस्तावना व लिखित साधने भाग १", url: "https://www.youtube.com/embed/K3ezU4vtzk0" },
+                { name: "Chapter#01 | Topic#02 | लिखित साधने भाग २", url: "https://www.youtube.com/embed/RGtetpX8ycM" },
+                { name: "Chapter#01 | Topic#03 | वृत्तपत्रे", url: "https://www.youtube.com/embed/mPZRk1_oX9I" },
+                { name: "Chapter#01 | Topic#04 | प्रेस ट्रस्ट ऑफ इंडिया (PTI)", url: "https://www.youtube.com/embed/ufWTBCnmwAk" },
+                { name: "Chapter#01 | Topic#05 | टपाल तिकिटे", url: "https://www.youtube.com/embed/KwdaDUpw4JI" },
+                { name: "Chapter#01 | Topic#06 | भौतिक साधने", url: "https://www.youtube.com/embed/KuGXM6vaki4" },
+                { name: "Chapter#01 | Topic#07 | मौखिक साधने", url: "https://www.youtube.com/embed/Q3lTB9IiKvw" }
+              ],
+              "Chapter 2": [
+                { name: "Chapter#02 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/5XDJJbVpIEs" },
+                { name: "Chapter#02 | Topic#02 | १९६० चे दशक भाग १", url: "https://www.youtube.com/embed/4vMSMts157M" },
+                { name: "Chapter#02 | Topic#03 | १९६० चे दशक भाग १", url: "https://www.youtube.com/embed/4v0vzH4D1GA" },
+                { name: "Chapter#02 | Topic#04 | १९७० चे दशक", url: "https://www.youtube.com/embed/VoE4zAX0EP0" },
+                { name: "Chapter#02 | Topic#05 | १९८० चे दशक भाग १", url: "https://www.youtube.com/embed/t7pHERvNSjc" },
+                { name: "Chapter#02 | Topic#06 | १९८० चे दशक भाग २", url: "https://www.youtube.com/embed/NPu1SiKPJYk" },
+                { name: "Chapter#02 | Topic#07 | १९९१ नंतरचे बदल", url: "https://www.youtube.com/embed/hIzqXiZSO-s" },
+                { name: "Chapter#02 | Topic#08 | भारतीय अर्थव्यवस्था", url: "https://www.youtube.com/embed/xsrw8GKLKVg" },
+                { name: "Chapter#02 | Topic#09 | विज्ञान आणि तंत्रज्ञान", url: "https://www.youtube.com/embed/7mL3ePFPOPA" },
+                { name: "Chapter#02 | Topic#10 | सामाजिक क्षेत्रातील बदल", url: "https://www.youtube.com/embed/_M8xj5CmBTo" },
+                { name: "Chapter#02 | Topic#11 | जागतिकीकरण", url: "https://www.youtube.com/embed/0Z00xbwk4Ic" }
+              ],
+              "Chapter 3": [
+                { name: "Chapter#03 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/wWAaf05h3v0" },
+                { name: "Chapter#03 | Topic#02 | ऑपरेशन ब्लू स्टार", url: "https://www.youtube.com/embed/vSb4oyH9dT4" },
+                { name: "Chapter#03 | Topic#03 | ईशान्य भारत समस्या", url: "https://www.youtube.com/embed/J2l3USc47us" },
+                { name: "Chapter#03 | Topic#04 | मिझोरम", url: "https://www.youtube.com/embed/tFlva6AelmU" },
+                { name: "Chapter#03 | Topic#05 | नागालँड", url: "https://www.youtube.com/embed/ukkP6076ZG4" },
+                { name: "Chapter#03 | Topic#06 | अरुणाचल प्रदेश", url: "https://www.youtube.com/embed/iucIGxEDzbs" },
+                { name: "Chapter#03 | Topic#07 | जमातवाद", url: "https://www.youtube.com/embed/kfVABVmbiwU" },
+                { name: "Chapter#03 | Topic#08 | प्रदेशवाद", url: "https://www.youtube.com/embed/nzV8BMTdnx4" }
+              ],
+              "Chapter 4": [
+                { name: "Chapter#04 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/T9lkZROUd0k" },
+                { name: "Chapter#04 | Topic#02 | मिश्र अर्थव्यवस्था भाग 2", url: "https://www.youtube.com/embed/TndCX-zgyKw" },
+                { name: "Chapter#04 | Topic#03 | पंचवार्षिक योजना", url: "https://www.youtube.com/embed/WssO9q5ao2s" },
+                { name: "Chapter#04 | Topic#04 | पहिली पंचवार्षिक योजना (१९५१-१९५६)", url: "https://www.youtube.com/embed/eZ5vpOrA7L4" },
+                { name: "Chapter#04 | Topic#05 | चौथी पंचवार्षिक योजना (१९६९-१९७४)", url: "https://www.youtube.com/embed/A8OEOc_A3hk" },
+                { name: "Chapter#04 | Topic#06 | सहावी पंचवार्षिक योजना (१९८०-१९८५)", url: "https://www.youtube.com/embed/9XCROyY1WFY" },
+                { name: "Chapter#04 | Topic#07 | आठवी पंचवार्षिक योजना (१९९२-१९९७)", url: "https://www.youtube.com/embed/FrOYNhvw1M4" },
+                { name: "Chapter#04 | Topic#08 | नववी पंचवार्षिक योजना (१९९७-२००२)", url: "https://www.youtube.com/embed/2sCY16Z0lnU" },
+                { name: "Chapter#04 | Topic#09 | बँकांचे राष्ट्रीयीकरण", url: "https://www.youtube.com/embed/-5ZDpB-tjKg" },
+                { name: "Chapter#04 | Topic#10 | वीस कलमी कार्यक्रम", url: "https://www.youtube.com/embed/Vd59sEMR24M" },
+                { name: "Chapter#04 | Topic#11 | कामगार समस्या भाग १", url: "https://www.youtube.com/embed/WrDchcJ8Kww" },
+                { name: "Chapter#04 | Topic#12 | कामगार समस्या भाग २", url: "https://www.youtube.com/embed/EBWdn-wi-3g" },
+                { name: "Chapter#04 | Topic#13 | नवे आर्थिक धोरण", url: "https://www.youtube.com/embed/5MA28Y832gc" },
+                { name: "Chapter#04 | Topic#14 | उपाययोजना", url: "https://www.youtube.com/embed/9rTZKJTtFDs" },
+                { name: "Chapter#04 | Topic#15 | वल्ड ट्रेड ऑर्गनायझेशन", url: "https://www.youtube.com/embed/C8f8InOD1Eo" }
+              ],
+              "Chapter 5": [
+                { name: "Chapter#05 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/2y2MhRYEktM" },
+                { name: "Chapter#05 | Topic#02 | प्राथमिक शिक्षण", url: "https://www.youtube.com/embed/eDg54onip2k" },
+                { name: "Chapter#05 | Topic#03 | विशेष माहिती", url: "https://www.youtube.com/embed/pKxT6gZ7iRU" },
+                { name: "Chapter#05 | Topic#04 | माध्यमिक शिक्षण", url: "https://www.youtube.com/embed/-hLPTAhmq1w" },
+                { name: "Chapter#05 | Topic#05 | कोठारी आयोग", url: "https://www.youtube.com/embed/phcGi8x6dx0" },
+                { name: "Chapter#05 | Topic#06 | स्वातंत्र्योत्तर कालखंडातील शिक्षण", url: "https://www.youtube.com/embed/Tgb55RV1zxI" },
+                { name: "Chapter#05 | Topic#07 | नॅशनल कौन्सिल (NCERT)", url: "https://www.youtube.com/embed/JWgeVxHG3o8" },
+                { name: "Chapter#05 | Topic#08 | राष्ट्रीय शैक्षणिक धोरण १९८६", url: "https://www.youtube.com/embed/D89EbEc4RkQ" },
+                { name: "Chapter#05 | Topic#09 | उपग्रह वापर", url: "https://www.youtube.com/embed/zl5c9MGRBXs" },
+                { name: "Chapter#05 | Topic#10 | संशोधनसंस्था", url: "https://www.youtube.com/embed/uLOxo0ujDv8" },
+                { name: "Chapter#05 | Topic#11 | संगणक", url: "https://www.youtube.com/embed/48Haro2vXFs" },
+                { name: "Chapter#05 | Topic#12 | अभियांत्रिकी", url: "https://www.youtube.com/embed/-D30QAc2X4c" },
+                { name: "Chapter#05 | Topic#13 | नॅशनल इंस्टिट्यूट ऑफ डिझाईन (NID)", url: "https://www.youtube.com/embed/Pioz4TmxbUI" },
+                { name: "Chapter#05 | Topic#14 | कर्करोग शिक्षण", url: "https://www.youtube.com/embed/7wXlWzt63rc" }
+              ]
+            },
+
+            "Science": [
+              {
+                name: "Chapter 1",
+                topics: [
+                  { name: "Chapter#01 | Topic#01 | वस्तूची गती", url: "https://www.youtube.com/embed/Y9Bd-n13C3c" },
+                  { name: "Chapter#01 | Topic#02 | विस्थापन आणि अंतर", url: "https://www.youtube.com/embed/5-_DZqpEyRc" },
+                  { name: "Chapter#01 | Topic#03 | चाल व वेग", url: "https://www.youtube.com/embed/ZTGP1LipgCU" },
+                  { name: "Chapter#01 | Topic#04 | चाल व दिशा यांचा वेगावर होणारा परिणाम", url: "https://www.youtube.com/embed/Hy_kyji27D4" },
+                  { name: "Chapter#01 | Topic#05 | एकरेषीय एकसमान व नैकसमान गती", url: "https://www.youtube.com/embed/PmOHPMdRNCQ" },
+                  { name: "Chapter#01 | Topic#06 | त्वरण", url: "https://www.youtube.com/embed/meG1JT5KhjQ" },
+                  { name: "Chapter#01 | Topic#07 | एकसमान गतीसाठी अंतर – काळ आलेख", url: "https://www.youtube.com/embed/QRNpWZJQaPo" },
+                  { name: "Chapter#01 | Topic#08 | एकसमान गतीकरिता वेग – काल आलेख", url: "https://www.youtube.com/embed/M_GC5wRzJHY" },
+                  { name: "Chapter#01 | Topic#09 | आलेख पद्धतीने गतीविषयक समीकरणे", url: "https://www.youtube.com/embed/dc3mjGQ5hvw" },
+                  { name: "Chapter#01 | Topic#10 | विस्थापन – काल संबंधाचे समीकरण", url: "https://www.youtube.com/embed/YHrGD0GHe-c" },
+                  { name: "Chapter#01 | Topic#11 | एकसमान वर्तुळाकार गती", url: "https://www.youtube.com/embed/jftlIfQxTGo" },
+                  { name: "Chapter#01 | Topic#12 | एकसमान वर्तुळाकार वेगाची दिशा काढणे", url: "https://www.youtube.com/embed/mPzpsODtRps" },
+                  { name: "Chapter#01 | Topic#13 | न्यूटनचे गतीविषयक नियम", url: "https://www.youtube.com/embed/XywbtS99Bjg" },
+                  { name: "Chapter#01 | Topic#14 | न्यूटनचा गतिविषयक दुसरा नियम", url: "https://www.youtube.com/embed/vz1G_PlHamI" },
+                  { name: "Chapter#01 | Topic#15 | न्यूटनचा गतिविषयक दुसरा नियम (उदाहरण)", url: "https://www.youtube.com/embed/fQwkFpmOHk8" },
+                  { name: "Chapter#01 | Topic#16 | न्यूटनचा गतविषयक तिसरा नियम", url: "https://www.youtube.com/embed/NMrlULbpDLk" },
+                  { name: "Chapter#01 | Topic#17 | संवेग अक्षय्यतेचा सिद्धांत", url: "https://www.youtube.com/embed/FuN_Uxi4dFY" },
+                  { name: "Chapter#01 | Topic#18 | उदाहरणे", url: "https://www.youtube.com/embed/b00dE9-IvY8" }
+                ]
+              },
+              {
+                name: "Chapter 2",
+                topics: [
+                  { name: "Chapter#02 | Topic#01 | कार्य आणि ऊर्जा प्रस्तावना", url: "https://www.youtube.com/embed/g3qyJ4gzZ0k" },
+                  { name: "Chapter#02 | Topic#02 | वस्तूचे विस्थापन", url: "https://www.youtube.com/embed/lXD3kNiAoig" },
+                  { name: "Chapter#02 | Topic#03 | कार्याचे एकक", url: "https://www.youtube.com/embed/_TDIBqbwDfs" },
+                  { name: "Chapter#02 | Topic#04 | धन, ऋण व शून्य कार्य", url: "https://www.youtube.com/embed/TtvUcNgjj2g" },
+                  { name: "Chapter#02 | Topic#05 | कार्यावर आधारित प्रयोग", url: "https://www.youtube.com/embed/789a3NMME4M" },
+                  { name: "Chapter#02 | Topic#06 | उदाहरणे", url: "https://www.youtube.com/embed/V_k7w4V6Uec" },
+                  { name: "Chapter#02 | Topic#07 | ऊर्जा", url: "https://www.youtube.com/embed/b4HwIC05lxE" },
+                  { name: "Chapter#02 | Topic#08 | गतिज ऊर्जेचे समीकरण", url: "https://www.youtube.com/embed/PBmJa7aBDv8" },
+                  { name: "Chapter#02 | Topic#09 | स्थितिज ऊर्जा", url: "https://www.youtube.com/embed/-SFXEqwyn6s" },
+                  { name: "Chapter#02 | Topic#10 | स्थितिज ऊर्जेचे समीकरण", url: "https://www.youtube.com/embed/MrzcBLGtIas" },
+                  { name: "Chapter#02 | Topic#11 | ऊर्जा रूपांतरण", url: "https://www.youtube.com/embed/MlQ02UcifnY" },
+                  { name: "Chapter#02 | Topic#12 | मुक्तपतन", url: "https://www.youtube.com/embed/lTDx4ztVU0g" },
+                  { name: "Chapter#02 | Topic#13 | शक्ती", url: "https://www.youtube.com/embed/mvGlDolFZw4" },
+                  { name: "Chapter#02 | Topic#14 | शक्तीवर आधारित काही उदाहरणांचा अभ्यास करूयात", url: "https://www.youtube.com/embed/nyQzSGhNyKQ" }
+                ]
+              },
+              {
+                name: "Chapter 3",
+                topics: [
+                  { name: "Chapter#03 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/GFeaNszMTRk" },
+                  { name: "Chapter#03 | Topic#02 | विभव", url: "https://www.youtube.com/embed/CDrvAcj6_Vc" },
+                  { name: "Chapter#03 | Topic#03 | विभवांतर", url: "https://www.youtube.com/embed/FSL_5gP0xco" },
+                  { name: "Chapter#03 | Topic#04 | व्होल्ट", url: "https://www.youtube.com/embed/S3XZCESZMv4" },
+                  { name: "Chapter#03 | Topic#05 | विद्युतधारा", url: "https://www.youtube.com/embed/6-ZGVwvzOAc" },
+                  { name: "Chapter#03 | Topic#06 | विद्युत रोध (Resistance) आणि ओहमचा नियम", url: "https://www.youtube.com/embed/nA9x1mXdT6Y" },
+                  { name: "Chapter#03 | Topic#07 | वाहकाचा रोध व रोधकता", url: "https://www.youtube.com/embed/pJJnQvh3r4w" },
+                  { name: "Chapter#03 | Topic#08 | विद्युत परिपथ", url: "https://www.youtube.com/embed/-lVPWj_pQZU" },
+                  { name: "Chapter#03 | Topic#09 | वाहक आणि विसंवाहक", url: "https://www.youtube.com/embed/qkCU9rmNlWQ" },
+                  { name: "Chapter#03 | Topic#10 | ओहमचा नियम व रोधकता", url: "https://www.youtube.com/embed/-JOLFImVdsc" },
+                  { name: "Chapter#03 | Topic#11 | उदाहरणे भाग 1", url: "https://www.youtube.com/embed/A98ZotyTTVg" },
+                  { name: "Chapter#03 | Topic#12 | रोधांची जोडणी आणि परिणामी रोध", url: "https://www.youtube.com/embed/yy8CZLsYnp4" },
+                  { name: "Chapter#03 | Topic#13 | एकसर जोडणी उदाहरणे", url: "https://www.youtube.com/embed/RJz525Hj5FA" },
+                  { name: "Chapter#03 | Topic#14 | रोधांची समांतर जोडणी", url: "https://www.youtube.com/embed/KXGVs8slcJE" },
+                  { name: "Chapter#03 | Topic#15 | समांतर जोडणी उदाहरणे", url: "https://www.youtube.com/embed/ylOOalyeCO0" },
+                  { name: "Chapter#03 | Topic#16 | घरगुती विद्युत जोडणी", url: "https://www.youtube.com/embed/fpuCziI0rs8" }
+                ]
+              },
+              {
+                name: "Chapter 4",
+                topics: [
+                  { name: "Chapter#04 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/bUgh-7acfHk" },
+                  { name: "Chapter#04 | Topic#02 | स्थिर प्रमाणाचा नियम", url: "https://www.youtube.com/embed/G-Bm1i5xvZ0" },
+                  { name: "Chapter#04 | Topic#03 | अणू आकार (Size of Autom )", url: "https://www.youtube.com/embed/X0nMi87GE3M" },
+                  { name: "Chapter#04 | Topic#04 | अणूचे वस्तुमान (Mass of Autom)", url: "https://www.youtube.com/embed/W94SJ0VCXSA" },
+                  { name: "Chapter#04 | Topic#05 | मूलद्रव्यांच्या रासायनिक संज्ञा", url: "https://www.youtube.com/embed/6-T7HxaG5SM" },
+                  { name: "Chapter#04 | Topic#06 | रेणूवस्तुमानाची संकल्पना", url: "https://www.youtube.com/embed/3oTN0XJmkHY" },
+                  { name: "Chapter#04 | Topic#07 | मोलची संकल्पना", url: "https://www.youtube.com/embed/dq4_x58uLws" },
+                  { name: "Chapter#04 | Topic#08 | ॲव्हागॅड्रो अंक", url: "https://www.youtube.com/embed/vINiEO-ju94" },
+                  { name: "Chapter#04 | Topic#09 | संयुजा", url: "https://www.youtube.com/embed/XBdIg4mNywk" },
+                  { name: "Chapter#04 | Topic#10 | विज्ञान कुपी", url: "https://www.youtube.com/embed/bA_sywHvrGQ" },
+                  { name: "Chapter#04 | Topic#11 | मूलके", url: "https://www.youtube.com/embed/5Fsj52h22tE" },
+                  { name: "Chapter#04 | Topic#12 | संयुगाची रायायनिक सूत्रे", url: "https://www.youtube.com/embed/vr3vBvA1DaU" }
+                ]
+              },
+              {
+                name: "Chapter 5",
+                topics: [
+                  { name: "Chapter#05 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/jPmjFyFjVGo" },
+                  { name: "Chapter#05 | Topic#02 | आयनिक संयुगे", url: "https://www.youtube.com/embed/6kR3G-AzFjs" },
+                  { name: "Chapter#05 | Topic#03 | आयनिक संयुगाचे विचरण", url: "https://www.youtube.com/embed/XkcT8RGBITU" },
+                  { name: "Chapter#05 | Topic#04 | अऱ्हेनिअसचा आम्ल व आम्लारी सिद्धांत", url: "https://www.youtube.com/embed/_5TDZ8c0ycI" },
+                  { name: "Chapter#05 | Topic#05 | आम्ल व आम्लारीचे वर्गीकरण", url: "https://www.youtube.com/embed/-rpmK6QU8n8" },
+                  { name: "Chapter#05 | Topic#06 | आम्लाची आम्लारिधर्मता व आम्लारींची आम्लधर्मता", url: "https://www.youtube.com/embed/ZhK9twNi9Xc" },
+                  { name: "Chapter#05 | Topic#07 | आम्ल व आम्लारीची संहती", url: "https://www.youtube.com/embed/itwTrVHtUNk" },
+                  { name: "Chapter#05 | Topic#08 | द्रावणाचा सामू", url: "https://www.youtube.com/embed/B2QMhBnchCo" },
+                  { name: "Chapter#05 | Topic#09 | वैश्विक दर्शक", url: "https://www.youtube.com/embed/1PEvzDwb2ag" },
+                  { name: "Chapter#05 | Topic#10 | आम्ल व आम्लारींची क्रियाशीलता", url: "https://www.youtube.com/embed/B1QUQsfaCSE" },
+                  { name: "Chapter#05 | Topic#11 | धातूंबरोबर आम्लांची अभिक्रिया", url: "https://www.youtube.com/embed/JnRLagPZeGM" },
+                  { name: "Chapter#05 | Topic#12 | धातूंच्या ऑक्साइडबरोबर आम्लांची अभिक्रिया", url: "https://www.youtube.com/embed/5CSQhLpg7NQ" },
+                  { name: "Chapter#05 | Topic#13 | अधातुंच्या ऑक्साइडबरोबर आम्लारींची अभिक्रिया", url: "https://www.youtube.com/embed/JTSVZLuclkE" },
+                  { name: "Chapter#05 | Topic#14 | क्षार", url: "https://www.youtube.com/embed/9v_hM1vh1iA" },
+                  { name: "Chapter#05 | Topic#15 | स्फटिकजल", url: "https://www.youtube.com/embed/F-8aVF-oNeM" },
+                  { name: "Chapter#05 | Topic#16 | आयनिक संयुगे व विद्युतवाहकता", url: "https://www.youtube.com/embed/W2q0lbSW3-c" },
+                  { name: "Chapter#05 | Topic#17 | विद्युत अपघटन", url: "https://www.youtube.com/embed/ikTb87MNrAg" },
+                  { name: "Chapter#05 | Topic#18 | पाण्याचे विद्युत अपघटन", url: "https://www.youtube.com/embed/4WIA7dcrRYE" }
+                ]
+              },
+              {
+                name: "Chapter 6",
+                topics: [
+                  { name: "Chapter#06 | Topic#01 | प्रस्तावना, सृष्टी", url: "https://www.youtube.com/embed/RQuOy-Yj860" },
+                  { name: "Chapter#06 | Topic#02 | वर्गीकरणाचा आधार", url: "https://www.youtube.com/embed/F8nzFl24k5o" },
+                  { name: "Chapter#06 | Topic#03 | उपसृष्टी - अजीबपत्री वनस्पती - थॉलोफायटा", url: "https://www.youtube.com/embed/uaRdLKV25t0" },
+                  { name: "Chapter#06 | Topic#04 | ब्रायोफायटा, टेरिडोफायटा", url: "https://www.youtube.com/embed/q61lXz41Ji4" },
+                  { name: "Chapter#06 | Topic#05 | उपसृष्टी - बीजपत्री, अनावृत्तबीजी", url: "https://www.youtube.com/embed/ZY7v0xDpM6c" },
+                  { name: "Chapter#06 | Topic#06 | आवृत्तबीजी वनस्पती", url: "https://www.youtube.com/embed/fq33VnqD-G0" }
+                ]
+              },
+              {
+                name: "Chapter 7",
+                topics: [
+                  { name: "Chapter#07 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/Ta7LLIH1FB0" },
+                  { name: "Chapter#07 | Topic#02 | अन्नसाखळी", url: "https://www.youtube.com/embed/s21kiAmatcc" },
+                  { name: "Chapter#07 | Topic#03 | अन्नजाळे", url: "https://www.youtube.com/embed/wyzLm67bf8I" },
+                  { name: "Chapter#07 | Topic#04 | पोषण पातळी", url: "https://www.youtube.com/embed/mJaFlu6LVCs" },
+                  { name: "Chapter#07 | Topic#05 | ऊर्जेचा प्रवाह ही एकेरी वाहतूक", url: "https://www.youtube.com/embed/jibOuomLfZo" },
+                  { name: "Chapter#07 | Topic#06 | कार्य संस्थांचे", url: "https://www.youtube.com/embed/MWE9aeQdPbQ" },
+                  { name: "Chapter#07 | Topic#07 | जैव-भू-रासायनिक चक्राचा अर्थ", url: "https://www.youtube.com/embed/hBi7Gbtk8XQ" },
+                  { name: "Chapter#07 | Topic#08 | कार्बन चक्र", url: "https://www.youtube.com/embed/uV7xk_OFNvo" },
+                  { name: "Chapter#07 | Topic#09 | ऑक्सिजन चक्र", url: "https://www.youtube.com/embed/HfJ7fSrHERU" },
+                  { name: "Chapter#07 | Topic#10 | नायट्रोजन चक्र", url: "https://www.youtube.com/embed/tbMIbml2Txs" }
+                ]
+              },
+              {
+                name: "Chapter 8",
+                topics: [
+                  { name: "Chapter#08 | Topic#01 | प्रस्तावना सूक्ष्मजीव", url: "https://www.youtube.com/embed/TtGX-WV9zuQ" },
+                  { name: "Chapter#08 | Topic#02 | जरा डोके चालवा", url: "https://www.youtube.com/embed/xmK18myD6EU" },
+                  { name: "Chapter#08 | Topic#03 | रायझोबिअम", url: "https://www.youtube.com/embed/goZ9ykSTUks" },
+                  { name: "Chapter#08 | Topic#04 | किण्व", url: "https://www.youtube.com/embed/qOtBjbyHEqo" },
+                  { name: "Chapter#08 | Topic#05 | पाव कसा बनतो?", url: "https://www.youtube.com/embed/WAHaJHsX6h4" },
+                  { name: "Chapter#08 | Topic#06 | जैव उपचार", url: "https://www.youtube.com/embed/fcOE6R0kNvQ" },
+                  { name: "Chapter#08 | Topic#07 | पेनिसिलीन", url: "https://www.youtube.com/embed/dADOkqH2APQ" },
+                  { name: "Chapter#08 | Topic#08 | उपद्रवी सूक्ष्मजीव", url: "https://www.youtube.com/embed/6lsOEXd4RhQ" },
+                  { name: "Chapter#08 | Topic#09 | इतर रोगकारक सूक्ष्मजीव", url: "https://www.youtube.com/embed/IDXRAoBdLF8" },
+                  { name: "Chapter#08 | Topic#10 | जरा डोके चालवा", url: "https://www.youtube.com/embed/ma0ShVPhhjM" }
+                ]
+              },
+              {
+                name: "Chapter 9",
+                topics: [
+                  { name: "Chapter#09 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/R6N9Qc7AITE" },
+                  { name: "Chapter#09 | Topic#02 | हवामान", url: "https://www.youtube.com/embed/F4-o5-SMcZw" },
+                  { name: "Chapter#09 | Topic#03 | हवामानाचा अनुकूल व प्रतिकूल परिणाम", url: "https://www.youtube.com/embed/EMr3HH4XDcM" },
+                  { name: "Chapter#09 | Topic#04 | हवामानशास्त्र", url: "https://www.youtube.com/embed/gKyRobUdyiU" },
+                  { name: "Chapter#09 | Topic#05 | मान्सून प्रारूप व हवामानाचा अंदाज", url: "https://www.youtube.com/embed/BPCjdsnI9Nc" },
+                  { name: "Chapter#09 | Topic#06 | घनकचरा व्यवस्थापन : काळाची गरज", url: "https://www.youtube.com/embed/Ov2GMuI5GVY" },
+                  { name: "Chapter#09 | Topic#07 | घनकचऱ्याचे स्त्रोत", url: "https://www.youtube.com/embed/W1u0RDLMaRA" },
+                  { name: "Chapter#09 | Topic#08 | टाकाऊ पदार्थाची यादी करा", url: "https://www.youtube.com/embed/gMHdoxu6oLo" },
+                  { name: "Chapter#09 | Topic#09 | घनकचरा व्यवस्थापनाची आवश्यकता", url: "https://www.youtube.com/embed/P6-D0uwxdJ8" },
+                  { name: "Chapter#09 | Topic#10 | घनकचरा व्यवस्थापनाची 7 तत्त्वे", url: "https://www.youtube.com/embed/pH-O8QX-AdU" },
+                  { name: "Chapter#09 | Topic#11 | घनकचरा व्यवस्थापनामध्ये आपली मदत", url: "https://www.youtube.com/embed/rfhq6TCsisY" },
+                  { name: "Chapter#09 | Topic#12 | कचऱ्याच्या विघटनासाठी लागणारा कालावधी", url: "https://www.youtube.com/embed/KGqLfj8i8Ks" },
+                  { name: "Chapter#09 | Topic#13 | आपत्ती व्यवस्थापन", url: "https://www.youtube.com/embed/u-dx2FWmFwc" },
+                  { name: "Chapter#09 | Topic#14 | जखमी झालेल्या आपद्ग्रस्तांना प्रथमोपचार", url: "https://www.youtube.com/embed/7YNNuql5ALo" },
+                  { name: "Chapter#09 | Topic#15 | रुग्णाचे / आपद्ग्रस्ताचे वहन कसे करावे?", url: "https://www.youtube.com/embed/G2c7gl5liN4" }
+                ]
+              },
+              {
+                name: "Chapter 10",
+                topics: [
+                  { name: "Chapter#10 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/Mm79NWF7nVQ" },
+                  { name: "Chapter#10 | Topic#02 | संगणकाच्या पिढ्या", url: "https://www.youtube.com/embed/Fj26UCN9sRI" },
+                  { name: "Chapter#10 | Topic#03 | संगणकाचे महत्त्वाचे घटक", url: "https://www.youtube.com/embed/BphQXSBdrXQ" },
+                  { name: "Chapter#10 | Topic#04 | वर्ड प्रोसेसर", url: "https://www.youtube.com/embed/6xUHBHSbaN8" },
+                  { name: "Chapter#10 | Topic#05 | वेब ब्राउझर", url: "https://www.youtube.com/embed/Gd1dNUC8U1o" },
+                  { name: "Chapter#10 | Topic#06 | विज्ञान आणि तंत्रज्ञानामध्ये माहिती संप्रेषणाचे महत्त्व", url: "https://www.youtube.com/embed/TyWw_NFfLw0" }
+                ]
+              },
+              {
+                name: "Chapter 11",
+                topics: [
+                  { name: "Chapter#11 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/NTnCoIw0Mfo" },
+                  { name: "Chapter#11 | Topic#02 | बिंदूस्रोताच्या प्रतिमेचा अभ्यास", url: "https://www.youtube.com/embed/Dhyrpb2iWCY" },
+                  { name: "Chapter#11 | Topic#03 | जरा डोके चालवा", url: "https://www.youtube.com/embed/SNhF0Aua5FA" },
+                  { name: "Chapter#11 | Topic#04 | गोलीय आरसे", url: "https://www.youtube.com/embed/UYoEfwqX2-I" },
+                  { name: "Chapter#11 | Topic#05 | गोलीय आरशाशी संबंधित संकल्पना", url: "https://www.youtube.com/embed/QRvipt20AeQ" },
+                  { name: "Chapter#11 | Topic#06 | किरणाकृती", url: "https://www.youtube.com/embed/578ffBq0hVM" },
+                  { name: "Chapter#11 | Topic#07 | निरीक्षण करा", url: "https://www.youtube.com/embed/Ncj6DIwCJqI" },
+                  { name: "Chapter#11 | Topic#08 | प्रकाशाचे अपसरण आणि अभिसरण", url: "https://www.youtube.com/embed/OiqCcNPz-3U" },
+                  { name: "Chapter#11 | Topic#09 | अंतर्गोल व बहिर्गोल आरशाचे गुणधर्म", url: "https://www.youtube.com/embed/b2YOIX7Lyf8" },
+                  { name: "Chapter#11 | Topic#10 | उदाहरण", url: "https://www.youtube.com/embed/4bwB4_Ox6E8" }
+                ]
+              },
+              {
+                name: "Chapter 12",
+                topics: [
+                  { name: "Chapter#12 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/klKo4ghIWQQ" },
+                  { name: "Chapter#12 | Topic#02 | ध्वनीचा वेग", url: "https://www.youtube.com/embed/S0Pwea70vxY" },
+                  { name: "Chapter#12 | Topic#03 | श्राव्य, अवश्राव्य व श्रव्यातीत ध्वनी", url: "https://www.youtube.com/embed/NPVDEhf7CU8" },
+                  { name: "Chapter#12 | Topic#04 | ध्वनीचे परावर्तन", url: "https://www.youtube.com/embed/p8uPCBRDlDI" },
+                  { name: "Chapter#12 | Topic#05 | निनाद", url: "https://www.youtube.com/embed/iLe4jPZM_wc" },
+                  { name: "Chapter#12 | Topic#06 | सोनोग्राफी", url: "https://www.youtube.com/embed/D-EZrckljHA" },
+                  { name: "Chapter#12 | Topic#07 | मानवी कर्ण", url: "https://www.youtube.com/embed/djDHKXRae9M" }
+                ]
+              },
+              {
+                name: "Chapter 13",
+                topics: [
+                  { name: "Chapter#13 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/Zg242mhiMHY" },
+                  { name: "Chapter#13 | Topic#02 | कार्बनचा आढळ", url: "https://www.youtube.com/embed/z7RgifAu_xU" },
+                  { name: "Chapter#13 | Topic#03 | ग्रॅफाइट", url: "https://www.youtube.com/embed/T8pK6PfOj7M" },
+                  { name: "Chapter#13 | Topic#04 | अस्फटिकी अपरूपे", url: "https://www.youtube.com/embed/6RJliIV8kJk" },
+                  { name: "Chapter#13 | Topic#05 | हायड्रोकार्बन्स: मूलभूत सेंद्रिय संयुगे", url: "https://www.youtube.com/embed/54_Iv-usvGY" },
+                  { name: "Chapter#13 | Topic#06 | कार्बनची विद्राव्यता", url: "https://www.youtube.com/embed/uGk_lsOKr7I" },
+                  { name: "Chapter#13 | Topic#07 | कार्बन डायऑक्साइड", url: "https://www.youtube.com/embed/RxQ9jzFakYI" },
+                  { name: "Chapter#13 | Topic#08 | कार्बन डायऑक्साइडचे भौतिक गुणधर्म", url: "https://www.youtube.com/embed/lOfKBudrJCs" },
+                  { name: "Chapter#13 | Topic#09 | मिथेन", url: "https://www.youtube.com/embed/tLdMhvBZPbs" },
+                  { name: "Chapter#13 | Topic#10 | बायोगॅस संयंत्र", url: "https://www.youtube.com/embed/jj7_DBio1e4" }
+                ]
+              },
+              {
+                name: "Chapter 14",
+                topics: [
+                  { name: "Chapter#14 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/lQmHTjr7iX4" },
+                  { name: "Chapter#14 | Topic#02 | दैनंदिन जीवनातील काही क्षारांची माहिती", url: "https://www.youtube.com/embed/l9IgD3O9HnA" },
+                  { name: "Chapter#14 | Topic#03 | ब्लिचिंग पावडर कॅल्शिअम ऑक्सिक्लोराइड", url: "https://www.youtube.com/embed/kVxFpoLcY1U" },
+                  { name: "Chapter#14 | Topic#04 | धुण्याचा सोडा", url: "https://www.youtube.com/embed/EzjRbcKzduo" },
+                  { name: "Chapter#14 | Topic#05 | काही स्फटिकी क्षार", url: "https://www.youtube.com/embed/cuOKSrvlMkM" },
+                  { name: "Chapter#14 | Topic#06 | किरणोत्सारी पदार्थ", url: "https://www.youtube.com/embed/PZZ0xl_74aw" },
+                  { name: "Chapter#14 | Topic#07 | किरणोत्सारी समस्थानिकांचे उपयोग", url: "https://www.youtube.com/embed/npiWn14vKkE" },
+                  { name: "Chapter#14 | Topic#08 | दैनंदिन जीवनातील काही रासायनिक पदार्थ", url: "https://www.youtube.com/embed/yu_ybVemnXg" },
+                  { name: "Chapter#14 | Topic#09 | डाय", url: "https://www.youtube.com/embed/OWtO8Nw3MOw" },
+                  { name: "Chapter#14 | Topic#10 | दुर्गंधीनाशक", url: "https://www.youtube.com/embed/KQS9g2IhVvs" },
+                  { name: "Chapter#14 | Topic#11 | अॅनोडायझींग", url: "https://www.youtube.com/embed/htQfbzLZC8M" }
+                ]
+              },
+              {
+                name: "Chapter 15",
+                topics: [
+                  { name: "Chapter#15 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/D9jvN0xKVQE" },
+                  { name: "Chapter#15 | Topic#02 | वनस्पतींमधील पाण्याचे वहन", url: "https://www.youtube.com/embed/ubOBpo4WJlM" },
+                  { name: "Chapter#15 | Topic#03 | वनस्पतींमधील अन्न आणि इतर पदार्थाचे परिवहन", url: "https://www.youtube.com/embed/pnSRsyAoV8A" },
+                  { name: "Chapter#15 | Topic#04 | मानवामधील उत्सर्जन", url: "https://www.youtube.com/embed/dzqTMi6GxCo" },
+                  { name: "Chapter#15 | Topic#05 | रक्त व्याश्लेषण", url: "https://www.youtube.com/embed/MRG3CFQHMz4" },
+                  { name: "Chapter#15 | Topic#06 | वनस्पतींमधील समन्वय", url: "https://www.youtube.com/embed/hCOjtoGQuls" },
+                  { name: "Chapter#15 | Topic#07 | मानवातील समन्वय", url: "https://www.youtube.com/embed/gTAwTNFKhRY" },
+                  { name: "Chapter#15 | Topic#08 | मानवी चेतासंस्था", url: "https://www.youtube.com/embed/CljE7iYpyXE" },
+                  { name: "Chapter#15 | Topic#09 | परिघीय चेतासंस्था", url: "https://www.youtube.com/embed/6P88HeafzLo" },
+                  { name: "Chapter#15 | Topic#10 | रासायनिक नियंत्रण", url: "https://www.youtube.com/embed/DlJPrpP9I1I" }
+                ]
+              },
+              {
+                name: "Chapter 16",
+                topics: [
+                  { name: "Chapter#16 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/q1f83gq_5gA" },
+                  { name: "Chapter#16 | Topic#02 | आनुवंशिकता", url: "https://www.youtube.com/embed/EQm7qjgFlTY" },
+                  { name: "Chapter#16 | Topic#03 | डी.एन.ए", url: "https://www.youtube.com/embed/6tFetdvC9OQ" },
+                  { name: "Chapter#16 | Topic#04 | आर.एन.ए. (Ribo Nuclic Acid)", url: "https://www.youtube.com/embed/6NhHmaHV8oQ" },
+                  { name: "Chapter#16 | Topic#05 | मेंडेलचा एकसंकर संततीचा प्रयोग", url: "https://www.youtube.com/embed/s3EDsJBDKZs" },
+                  { name: "Chapter#16 | Topic#06 | मेंडेलची द्विसंकर संतती (Dihybrid Cross)", url: "https://www.youtube.com/embed/TzF7H2B2Sqc" },
+                  { name: "Chapter#16 | Topic#07 | अनुवंशिक विकृती", url: "https://www.youtube.com/embed/j42Pz7bYqfA" },
+                  { name: "Chapter#16 | Topic#08 | राष्ट्रीय आरोग्य अभियान", url: "https://www.youtube.com/embed/7uBaewBiiP0" },
+                  { name: "Chapter#16 | Topic#09 | सिकलसेल आजार", url: "https://www.youtube.com/embed/aFLTuwMKpuA" },
+                  { name: "Chapter#16 | Topic#10 | तंतुकणिकीय विकृती", url: "https://www.youtube.com/embed/Znw-ggHJGsU" }
+                ]
+              },
+              {
+                name: "Chapter 17",
+                topics: [
+                  { name: "Chapter#17 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/NbAjt8Cj_qs" },
+                  { name: "Chapter#17 | Topic#02 | प्राणी ऊती", url: "https://www.youtube.com/embed/KFgYbj8jaxw" },
+                  { name: "Chapter#17 | Topic#03 | संयोजी ऊती", url: "https://www.youtube.com/embed/xloBIpCIcZs" },
+                  { name: "Chapter#17 | Topic#04 | स्नायूऊती", url: "https://www.youtube.com/embed/1k8t_KVs_vo" },
+                  { name: "Chapter#17 | Topic#05 | वनस्पती ऊती", url: "https://www.youtube.com/embed/uvdtvPNSmB4" },
+                  { name: "Chapter#17 | Topic#06 | स्थायी ऊती", url: "https://www.youtube.com/embed/r-Laouzrtv0" },
+                  { name: "Chapter#17 | Topic#07 | जैवतंत्रज्ञान", url: "https://www.youtube.com/embed/vHc13EW4ljY" },
+                  { name: "Chapter#17 | Topic#08 | जैवतंत्रज्ञानामुळे शेती व्यवस्थापनात झालेले बदल", url: "https://www.youtube.com/embed/cMwf3iPD1Dw" },
+                  { name: "Chapter#17 | Topic#09 | कृषी पर्यटन", url: "https://www.youtube.com/embed/yndJV8tFjLI" },
+                  { name: "Chapter#17 | Topic#10 | कुक्कुटपालन", url: "https://www.youtube.com/embed/-0-PMsVY2_U" }
+                ]
+              },
+              {
+                name: "Chapter 18",
+                topics: [
+                  { name: "Chapter#18 | Topic#01 | प्रस्तावना", url: "https://www.youtube.com/embed/52fc0dcwVpA" },
+                  { name: "Chapter#18 | Topic#02 | दुर्बिणी", url: "https://www.youtube.com/embed/Zz99KnBbbKs" },
+                  { name: "Chapter#18 | Topic#03 | रेडिओ दुर्बीण", url: "https://www.youtube.com/embed/ek-ilyPWzW4" },
+                  { name: "Chapter#18 | Topic#04 | अवकाशातील दुर्बिणी", url: "https://www.youtube.com/embed/ydotoJya9rw" },
+                  { name: "Chapter#18 | Topic#05 | भारतीय अंतरीक्ष अनुसंधान केंद्र बंगळूरू", url: "https://www.youtube.com/embed/ghNbU1T9xwI" }
+                ]
+              }
+            ]
+          },
+          "Class 8": { 
+            "Marathi": [
+                { name: "Chapter 5 | नव्या युगाचे गाणे (कविता गायन)", url: "https://www.youtube.com/embed/T5j7wqztgFo" },
+                { name: "Chapter 5 | सुरांची जादुगिरी", url: "https://www.youtube.com/embed/CcxtGbEXwXw" },
+                { name: "Chapter 5 | सुरांची जादूगिरी स्वाध्याय", url: "https://www.youtube.com/embed/3KJ_aihdC5Q" },
+                { name: "Chapter 6 | असा रंगारी श्रावण", url: "https://www.youtube.com/embed/Xq7LZpxasTs" },
+                { name: "Chapter 6 | असा रंगारी श्रावण स्वाध्याय", url: "https://www.youtube.com/embed/xstB_3RGa-c" },
+                { name: "Chapter 7 | अण्णा भाऊंची भेट", url: "https://www.youtube.com/embed/5M7FiGYTxRc" },
+                { name: "Chapter 7 | अण्णाभाऊ साठे स्वाध्याय", url: "https://www.youtube.com/embed/ruq36BOvPEA" },
+                { name: "Chapter 8 | धाडसी कॅप्टन राधिका मेनन", url: "https://www.youtube.com/embed/K-6SP9Db7S4" },
+                { name: "Chapter 9 | विद्याप्रशंसा (कविता)", url: "https://www.youtube.com/embed/rNFWwf1Olnc" },
+              ], 
+            "History": [
+                { name: "Chapter 1 | इतिहासाची साधने", url: "https://www.youtube.com/embed/4oC8AbtMQUM" },
+                { name: "Chapter 2 | युरोप आणि भारत", url: "https://www.youtube.com/embed/kCDxlwz8rt8" },
+                { name: "Chapter 3 | ब्रिटिश सत्तेचे परिणाम", url: "https://www.youtube.com/embed/9xNYmByr15o" },
+                { name: "Chapter 4 | 1857 चा स्वातंत्र्यलढा", url: "https://www.youtube.com/embed/MdmMKw4OP_U" },
+                { name: "Chapter 5 | सामाजिक व धार्मिक प्रबोधन", url: "https://www.youtube.com/embed/cqM97UHAEYQ" },
+                { name: "Chapter 6 | स्वातंत्र्य चळवळीच्या युगास प्रारंभ", url: "https://www.youtube.com/embed/u_EuiG9QIq4" },
+                { name: "Chapter 7 | असहकार चळवळ", url: "https://www.youtube.com/embed/d_W0TSWawmI" },
+                { name: "Chapter 8 | सविनय कायदेभंग चळवळ", url: "https://www.youtube.com/embed/vA0-BuVGjME" },
+                { name: "Chapter 9 | स्वातंत्र्यलढ्याचे अंतिम पर्व", url: "https://www.youtube.com/embed/Z1VR429rpsA" },
+                { name: "Chapter 10 | सशस्त्र क्रांतिकारी चळवळ", url: "https://www.youtube.com/embed/Ms0cGKNqfSU" },
+                { name: "Chapter 11 | समतेचा लढा", url: "https://www.youtube.com/embed/YjspvgP9AaY" },
+                { name: "Chapter 12 | स्वातंत्र्यप्राप्ती", url: "https://www.youtube.com/embed/Z1roRsrxk_4" },
+                { name: "Chapter 13 | स्वातंत्र्यालढ्याची परिपूर्ती", url: "https://www.youtube.com/embed/wokoh_RlpOU" },
+                { name: "Chapter 14 | महाराष्ट्र राज्याची निर्मिती", url: "https://www.youtube.com/embed/lgkgVI_liZU" }
+              ], 
+            "English": [], 
+            "Science": [] 
+          },
+          "Class 7": { "Marathi": [], "History": [
+                { name: "Chapter 1 | इतिहासाची साधने", url: "https://www.youtube.com/embed/aKkUq7js1tc" },
+                { name: "Chapter 2 | शिवपूर्वकालिन भारत", url: "https://www.youtube.com/embed/c-HmPd-UnDE" },
+                { name: "Chapter 3 | धार्मिक समन्वय", url: "https://www.youtube.com/embed/_8mahOAVnaE" },
+                { name: "Chapter 4 | शिवपूर्वकालीन महाराष्ट्र", url: "https://www.youtube.com/embed/lQOpBmT3QRE" },
+                { name: "Chapter 5 | स्वराज्यस्थापना", url: "https://www.youtube.com/embed/ZMzHVuu9KC0" },
+                { name: "Chapter 6 | मुघलांशी संघर्ष", url: "https://www.youtube.com/embed/O-ifOEUh4kQ" },
+                { name: "Chapter 7 | स्वराज्याचा कारभार", url: "https://www.youtube.com/embed/uOAV7R7vYfI" },
+                { name: "Chapter 8 | आदर्श राज्यकर्ता", url: "https://www.youtube.com/embed/sonZhPOW3k4" },
+                { name: "Chapter 9 | मराठ्यांचा स्वातंत्र्यसंग्राम", url: "https://www.youtube.com/embed/GUzMAaN2Iuo" },
+                { name: "Chapter 10 | मराठ्यांच्या सत्तेचा विस्तार", url: "https://www.youtube.com/embed/1Xqb4TMM7q4" },
+                { name: "Chapter 11 | राष्ट्ररक्षक मराठे", url: "https://www.youtube.com/embed/6wfQgSds3AA" },
+                { name: "Chapter 12 | साम्राज्याची वाटचाल", url: "https://www.youtube.com/embed/x0BUs3PECjM" },
+                { name: "Chapter 13 | महाराष्ट्रातील समाजजीवन", url: "https://www.youtube.com/embed/_UUjraH_27w" }
+              ]
+          
+          , "English": [] },
+          "Class 6": { "Marathi": [], "History": [
+                { name: "Chapter 1", url: "https://www.youtube.com/embed/CyOydAsbhAQ" },
+                { name: "Chapter 2 | इतिहासाची साधने", url: "https://www.youtube.com/embed/46JQ1ElR5h4" },
+                { name: "Chapter 3 | हडप्पा संस्कृती", url: "https://www.youtube.com/embed/m9Rtzof0kWQ" },
+                { name: "Chapter 4 | वैदिक संस्कृती", url: "https://www.youtube.com/embed/vKy2qtGoies" },
+                { name: "Chapter 5 | प्राचीन भारतातील धार्मिक प्रवाह", url: "https://www.youtube.com/embed/APKeHFGkms4" },
+                { name: "Chapter 6 | जनपदे आणि महाजनपदे", url: "https://www.youtube.com/embed/jDQEGixZK84" },
+                { name: "Chapter 7", url: "https://www.youtube.com/embed/kVJ_qVvxYFg" },
+                { name: "Chapter 8 | मौर्य साम्राज्यानंतरची राज्ये", url: "https://www.youtube.com/embed/Pq2hkpjP4W0" },
+                { name: "Chapter 9 | दक्षिण भारतातील प्राचीन राज्ये", url: "https://www.youtube.com/embed/xUbaaYVKRAQ" },
+                { name: "Chapter 10 | प्राचीन भारत : सांस्कृतिक", url: "https://www.youtube.com/embed/Npkzb8sONcw" },
+                { name: "Chapter 11 | प्राचीन भारत आणि जग", url: "https://www.youtube.com/embed/DdhAPw8zb30" }
+              ],
+                    "Geography": [
+                { name: "Chapter 1 | पृथ्वी आणि वृत्ते", url: "https://www.youtube.com/embed/CjG2m9f_l2A" },
+                { name: "Chapter 2 | चला वृत्ते वापरूयात", url: "https://www.youtube.com/embed/T-C7mSpNJn4" },
+                { name: "Chapter 3 | पृथ्वीगोल, नकाशा तुलना व क्षेत्रभेट", url: "https://www.youtube.com/embed/q7IxWMPH-cY" },
+                { name: "Chapter 4 | हवा व हवामान", url: "https://www.youtube.com/embed/ShWQsaG3PpE" },
+                { name: "Chapter 5 | तापमान", url: "https://www.youtube.com/embed/7J6CzuSg0xs" },
+                { name: "Chapter 6 | महासागरांचे महत्त्व", url: "https://www.youtube.com/embed/EI1ejZrjVEA" },
+                { name: "Chapter 7 | खडक व खडकांचे प्रकार", url: "https://www.youtube.com/embed/H_PD4-yVs4k" },
+                { name: "Chapter 8 | नैसर्गिक संसाधने", url: "https://www.youtube.com/embed/EIlc-UY9b9E" },
+                { name: "Chapter 9 | ऊर्जा साधने", url: "https://www.youtube.com/embed/KdV6fOKk3FI" },
+                { name: "Chapter 10 | मानवाचे व्यवसाय", url: "https://www.youtube.com/embed/okjGmjDyq0k" }
+              ],
+               "Science": [] },
+          "Class 5": { "Marathi": [
+                { name: "Chapter 1 | माय मराठी", url: "https://www.youtube.com/embed/dO31VQEZcbI" },
+                { name: "Chapter 2 | बंडूची इजार", url: "https://www.youtube.com/embed/jLEJc_mRJtw" },
+                { name: "Chapter 4 | सावरपाडा एक्स्प्रेस", url: "https://www.youtube.com/embed/4bgEUhyCsd0" },
+                { name: "Chapter 5 | मुंग्यांच्या जगात", url: "https://www.youtube.com/embed/tRusT0oaOgQ" },
+                { name: "Chapter 7 | अरण्यलिपी", url: "https://www.youtube.com/embed/0Ll691Xjc-M" },
+                { name: "Chapter 8 | प्रिय बाई", url: "https://www.youtube.com/embed/nAVpJG5cwQM" },
+                { name: "Chapter 9 | जनाई", url: "https://www.youtube.com/embed/-jXGRG55abk" },
+                { name: "Chapter 11 | कठीण समय येता", url: "https://www.youtube.com/embed/MfXcTD0e4aA" },
+                { name: "Chapter 12 | माळीण गाव - एक घटना", url: "https://www.youtube.com/embed/sPrlrhL8XUs" },
+                { name: "Chapter 14 | राष्ट्रसंत तुकडोजी महाराज", url: "https://www.youtube.com/embed/DOtU4Z79L4s" },
+                { name: "Chapter 15 | आपल्या समस्या आपले उपाय", url: "https://www.youtube.com/embed/Lok0obw_P-o" },
+                { name: "Chapter 17 | आमची सहल", url: "https://www.youtube.com/embed/AfRM-7WNzvs" },
+                { name: "Chapter 22 | अति तिथे माती", url: "https://www.youtube.com/embed/DeaMRpaKVv0" }
+              ], "Hindi": [], "English": [], "Science": [] },
+          "Class 4": { "Marathi": [
+                { name: "Chapter 1 | हीच आमची प्रार्थना (कविता गायन)", url: "https://www.youtube.com/embed/RYT1shJnOQM" },
+                { name: "Chapter 2 | श्रावण महिन्यात (कविता स्वाध्याय)", url: "https://www.youtube.com/embed/n1Flxy9DUcU" },
+                { name: "Chapter 3 | कौतुकाची थाप (स्वाध्याय)", url: "https://www.youtube.com/embed/sIs2_ZurcAo" },
+                { name: "Chapter 4 | आभाळातील फरकांड्या (स्वाध्याय)", url: "https://www.youtube.com/embed/Lr-NcL9lt5I" },
+                { name: "Chapter 5 | तिरंगा (कविता स्वाध्याय)", url: "https://www.youtube.com/embed/pXloAcgF8yw" },
+                { name: "Chapter 6 | माझे गाव (चित्रवर्णन)", url: "https://www.youtube.com/embed/J0jyCEWGB20" },
+                { name: "Chapter 7 | डोंगरदादा (स्वाध्याय)", url: "https://www.youtube.com/embed/0d0vO7zs0zk" },
+                { name: "Chapter 8 | माझ्या आठवणी (स्वाध्याय)", url: "https://www.youtube.com/embed/wHHF1Yd-K6A" },
+                { name: "Chapter 9 | फुलपाखरे (कविता स्वाध्याय)", url: "https://www.youtube.com/embed/k2cF6lAHhzY" },
+                { name: "Chapter 10 | मुकी फुले (स्वाध्याय)", url: "https://www.youtube.com/embed/iPu_KzK8WiA" },
+                { name: "Chapter 11 | आजोबांची अंगठी (चित्रकथा)", url: "https://www.youtube.com/embed/94QSFP3KiHk" },
+                { name: "Chapter 12 | बाभूळ (कविता स्वाध्याय)", url: "https://www.youtube.com/embed/6Xc_1W-QIFE" },
+                { name: "Chapter 13 | मला माझ्या आईचा अभिमान वाटतो (स्वाध्याय)", url: "https://www.youtube.com/embed/gdcrt9yzfKw" }
+              ], 
+              "Hindi": [], "English": [], "Science": [] },
+          "Class 3": { "Marathi": [
+                  { name: "Chapter 1 | शोधिशी मानवा", url: "https://www.youtube.com/embed/SRdoUER-CMw" },
+                  { name: "Chapter 2 | हिरवा वसा", url: "https://www.youtube.com/embed/lGMWEoeEH0c" },
+                  { name: "Chapter 2 | हिरवा वसा (स्वाध्याय)", url: "https://www.youtube.com/embed/MeigNj4DWWc" },
+                  { name: "Chapter 3 | गोष्ट तेनालीरामची", url: "https://www.youtube.com/embed/7y0YtZxGGfg" },
+                  { name: "Chapter 4 | अंतराळवीर", url: "https://www.youtube.com/embed/WVv676wcBSs" },
+                  { name: "Chapter 5 | हिरव्यागार झाडावर", url: "https://www.youtube.com/embed/_5sjcYv3bv4" },
+                  { name: "Chapter 6 | शुभ्राची परसबाग", url: "https://www.youtube.com/embed/fiHD4WdMhRA" },
+                  { name: "Chapter 7 | टिंब", url: "https://www.youtube.com/embed/BxD17_og9Vo" },
+                  { name: "Chapter 8 | खारीचा वाटा", url: "https://www.youtube.com/embed/ySyfWDo5M7E" },
+                  { name: "Chapter 9 | आम्ही ठाकर ठाकर", url: "https://www.youtube.com/embed/eiRWd_Fe-UE" },
+                  { name: "Chapter 10 | रेषांची जादू", url: "https://www.youtube.com/embed/Y0oxvjGztLA" },
+                  { name: "Chapter 11 | मामाची रंगीत गाडी", url: "https://www.youtube.com/embed/vxltMZDW-4E" },
+                  { name: "Chapter 12 | फुलपाखरं आली", url: "https://www.youtube.com/embed/UDy7DgsXPc4" },
+                  { name: "Chapter 13 | सावित्रीबाई फुले", url: "https://www.youtube.com/embed/vDhbOaziZvk" },
+                  { name: "Chapter 14 | सांग ना ओ माय!", url: "https://www.youtube.com/embed/mlz5wujq5r0" },
+                  { name: "Chapter 15 | रत्नपारखी", url: "https://www.youtube.com/embed/uZk8uGkDnVo" },
+                  { name: "Chapter 16 | हिरकणी", url: "https://www.youtube.com/embed/7lZw5W3AFsc" },
+                  { name: "Chapter 17 | तुला नव्या जगाची आण", url: "https://www.youtube.com/embed/fb5mcDMyIuw" },
+                  { name: "Chapter 18 | माझे गाव", url: "https://www.youtube.com/embed/Pwv1SUMNOQY" },
+                  { name: "Chapter 20 | संस्कार", url: "https://www.youtube.com/embed/bGx7Uos3WqE" },
+                  { name: "Chapter 21 | ग्रंथ मंदिर", url: "https://www.youtube.com/embed/Yc2cf9Np-Cg" },
+                  { name: "Chapter 22 | संतवाणी", url: "https://www.youtube.com/embed/coTjErE1oTo" }
+                ]
+                
+                  ,"English": []},
+          "Class 2": { "Marathi": [
+                  { name: "Chapter 1 | अजाण आम्ही तुझी लेकरे", url: "https://www.youtube.com/embed/9JGZoiUNKmU" },
+                  { name: "Chapter 2 | आमचे खेळ", url: "https://www.youtube.com/embed/lI75a0SBPUI" },
+                  { name: "Chapter 2 | आमचे खेळ स्वाध्याय", url: "https://www.youtube.com/embed/fVBvxzRMlow" },
+                  { name: "Chapter 2 | पाऊस (कविता गायन)", url: "https://www.youtube.com/embed/jUgMtwLRgSI" },
+                  { name: "Chapter 2 | पाऊस (कविता स्वाध्याय)", url: "https://www.youtube.com/embed/mr63Ct3qSPk" },
+                  { name: "Chapter 3 | साबणाचे बुडबुडे (Animated Story)", url: "https://www.youtube.com/embed/Dws6Qn8wdK0" },
+                  { name: "Chapter 3 | साबणाचे बुडबुडे स्वाध्याय", url: "https://www.youtube.com/embed/oBjSqH5olzQ" },
+                  { name: "Chapter 4 | अशी झाली फजिती (Animated Story)", url: "https://www.youtube.com/embed/MD0R4Tjhbx8" },
+                  { name: "Chapter 4 | अशी झाली फजिती स्वाध्याय", url: "https://www.youtube.com/embed/_J6TtoP_QOU" },
+                  { name: "Chapter 5 | लपाछपी स्वाध्याय", url: "https://www.youtube.com/embed/m_1YckTi-vA" },
+                  { name: "Chapter 6 | लिहावे नेटके", url: "https://www.youtube.com/embed/Kb6QqJOoyPA" },
+                  { name: "Chapter 6 | लिहावे नेटके स्वाध्याय", url: "https://www.youtube.com/embed/O8o4-9fSl50" },
+                  { name: "Chapter 7 | आकाशातील तारे (Animated Story)", url: "https://www.youtube.com/embed/tVgC4BQ64bU" },
+                  { name: "Chapter 7 | आकाशातील तारे स्वाध्याय", url: "https://www.youtube.com/embed/_7sjQRVv2X8" },
+                  { name: "Chapter 8 | पवनचक्की", url: "https://www.youtube.com/embed/MaCy55yIhlc" },
+                  { name: "Chapter 8 | पवनचक्की स्वाध्याय", url: "https://www.youtube.com/embed/ncdGe5wcqJ8" },
+                  { name: "Chapter 9 | भाज्यांची शाळा", url: "https://www.youtube.com/embed/ktNeWfUxdPc" },
+                  { name: "Chapter 9 | भाज्यांची शाळा (Animated Poem)", url: "https://www.youtube.com/embed/xU9vaUbetlM" },
+                  { name: "Chapter 9 | भाज्यांची शाळा स्वाध्याय", url: "https://www.youtube.com/embed/PtbUW8dW-go" },
+                  { name: "Chapter 11 | बागेतील फेरफटका (Animated Story)", url: "https://www.youtube.com/embed/YeEXS-lfTpk" },
+                  { name: "Chapter 11 | बागेतील फेरफटका स्वाध्याय", url: "https://www.youtube.com/embed/sEbbOkDdFw4" },
+                  { name: "Chapter 12 | एक झाड लावू मित्रा", url: "https://www.youtube.com/embed/aOTL-fUgJ2E" },
+                  { name: "Chapter 12 | एक झाड लावू मित्रा स्वाध्याय", url: "https://www.youtube.com/embed/cPx4QVINy98" },
+                  { name: "Chapter 12 | कबूतर आणि मुंगी चित्रकथा", url: "https://www.youtube.com/embed/IKogRkro9nU" },
+                  { name: "Chapter 12 | कबुतर आणि मुंगी स्वाध्याय", url: "https://www.youtube.com/embed/Fm0VkFwKu1w" },
+                  { name: "Chapter 13 | बैलजोडी कविता", url: "https://www.youtube.com/embed/PRZHiV91eRw" },
+                  { name: "Chapter 15 | मासा (कविता)", url: "https://www.youtube.com/embed/b-cbiErHS7c" },
+                  { name: "Chapter 17 | आभाळाचा फळा", url: "https://www.youtube.com/embed/sN2WdnZxxU0" },
+                  { name: "Chapter 19 | शाळा (कविता)", url: "https://www.youtube.com/embed/lqhjWHzSNvU" },
+                  { name: "Chapter 22 | सिरींज सिसरींज रे", url: "https://www.youtube.com/embed/jUcnta0pJvw" },
+                  { name: "Other | अ ते ज्ञ पर्यंत ठिपके जोड", url: "https://www.youtube.com/embed/887qVDOVcH0" },
+                  { name: "Other | एक राखी सैनिकांसाठी स्वाध्याय", url: "https://www.youtube.com/embed/BN_ar94hUq0" }
+
+                  ], "English": []},
+          "Class 1": { "Marathi": [
+                  { "name": "1st Bhasha | चित्रवाचन", "url": "https://www.youtube.com/embed/33swHwELzNI" },
+                  { "name": "1st Bhasha | घ छ ध ची ओळख", "url": "https://www.youtube.com/embed/PMIx29c1iAk" },
+                  { "name": "1st Bhasha | ख य थ ची ओळख", "url": "https://www.youtube.com/embed/Y8ibw9Ka9FY" },
+                  { "name": "1st Bhasha | क प फ ची ओळख", "url": "https://www.youtube.com/embed/ks_ORS1dcO4" },
+                  { "name": "1st Bhasha | तीन अक्षरी सोपे शब्द", "url": "https://www.youtube.com/embed/PRSQD4BT3QI" },
+                  { "name": "1st Bhasha | स र श ची ओळख", "url": "https://www.youtube.com/embed/06ImR6M8uJM" },
+                  { "name": "1st Bhasha | ट ठ ड ची ओळख", "url": "https://www.youtube.com/embed/KXEDU--Ns7Y" },
+                  { "name": "1st Bhasha | ब व त ची ओळख", "url": "https://www.youtube.com/embed/dRbf6FI1v38" },
+                  { "name": "1st Bhasha | च ज झ ल ळ ची ओळख", "url": "https://www.youtube.com/embed/xwiQYmTx8uc" },
+                  { "name": "1st Bhasha | ढ द ह ची ओळख", "url": "https://www.youtube.com/embed/pCEZ71XMJKI" },
+                  { "name": "1st Bhasha | दोन अक्षरी सोपे शब्द", "url": "https://www.youtube.com/embed/KJWzqyDC3j0" },
+                  { "name": "1st Bhasha | ग म भ न ची ओळख", "url": "https://www.youtube.com/embed/LLP6sIiBpRs" },
+                  { "name": "1st Bhasha | आकार,इकार, ईकार युक्त शब्द", "url": "https://www.youtube.com/embed/0lXeexcvpuQ" },
+                  { "name": "1st Bhasha | उकार, ऊकार युक्त शब्द", "url": "https://www.youtube.com/embed/Hai4yeZWHQk" },
+                  { "name": "1st Bhasha | एकार आणि ऐकार युक्त शब्द", "url": "https://www.youtube.com/embed/5wo4rFdb20I" },
+                  { "name": "1st Bhasha | ओकर, औकार, अंकार युक्त शब्द", "url": "https://www.youtube.com/embed/fyh-GJp3ZNw" },
+                  { "name": "1st Bhasha | चित्राद्वारे वाक्यवाचन", "url": "https://www.youtube.com/embed/BLv6sDleqAM" },
+                  { "name": "1st Bhasha | वाक्यावाचन भाग १", "url": "https://www.youtube.com/embed/0d9qA8WgXgw" }
+                ], 
+                "English": [
+              { name: "Chapter 1.1 My First Day", url: "https://www.youtube.com/embed/IOLL6M-CR9c" },
+              { name: "Poem 1.2 – Clap Your Hands", url: "https://www.youtube.com/embed/NxETBDNJdtw" },
+              { name: "Chapter 1.4 Let us read", url: "https://www.youtube.com/embed/DjmmjK2v_Gg" },
+              { name: "Chapter 1.6 The Rainbow", url: "https://www.youtube.com/embed/-fd8B1ka2cY" },
+              { name: "Chapter 1.9 Everybody has a name", url: "https://www.youtube.com/embed/wOrwH7Wyaww" },
+              { name: "Chapter 2.1 It's time to play", url: "https://www.youtube.com/embed/QcyOoUzlhSk" },
+              { name: "Chapter 2.2 Avni’s visit to the park", url: "https://www.youtube.com/embed/BmldckgYWNU" },
+              { name: "Chap 2.3 In the Classroom", url: "https://www.youtube.com/embed/folpMPu0mOk" },
+              { name: "Chap 2.4 My House", url: "https://www.youtube.com/embed/8suE1hEyTVU" },
+              { name: "Chap 2.5 Weather", url: "https://www.youtube.com/embed/4c4F_3ybpVc" },
+              { name: "chp 2 5 Weather", url: "https://www.youtube.com/embed/PKYpq1JCXAM" },
+              { name: "Chap 2.6 Magic Words", url: "https://www.youtube.com/embed/00phRgYibRc" },
+              { name: "Chap 2.7 Things I do", url: "https://www.youtube.com/embed/Z-XGbJPx3pI" },
+              { name: "Chap 2.8 Classroom Library", url: "https://www.youtube.com/embed/xbSU3jbxZoA" },
+              { name: "Chapter 2.9 Our Vehicles", url: "https://www.youtube.com/embed/fBUBLK3aGQU" },
+              { name: "Chap 2.10 Himani and the Ladybug", url: "https://www.youtube.com/embed/TbVK-qAYuaA" },
+              { name: "Chap 2.11 My Flower", url: "https://www.youtube.com/embed/Eox-ERC3z3I" },
+              { name: "Chap 2.12 Festivals", url: "https://www.youtube.com/embed/m5BZ-HPkIBA" },
+              { name: "Chap 3.1 Opposites", url: "https://www.youtube.com/embed/6G4oeHtEy_4" },
+              { name: "Chap 3.2 Suyog Makes Friends", url: "https://www.youtube.com/embed/HSBS9AI8YN4" },
+              { name: "Chap 3.4 Books are my best friends", url: "https://www.youtube.com/embed/uA7al5iZS2Y" },
+              { name: "Chapter 3.5 Open a Book", url: "https://www.youtube.com/embed/7rVBYHz9LFY" },
+              { name: "Chapter 3.6 Raghu goes to the market", url: "https://www.youtube.com/embed/t8YONHMflUY" },
+              { name: "Chapter 3.7 The Squirrel", url: "https://www.youtube.com/embed/Hj5FdKgqkTg" },
+              { name: "Chapter 3.8 Alia Falls Sick", url: "https://www.youtube.com/embed/1dFMnv6-iQE" },
+              { name: "Chapter 3.9 The Ant and the Grasshopper", url: "https://www.youtube.com/embed/BkVi9bwmrA0" },
+              { name: "Chapter 3.11 My Kitty Cat", url: "https://www.youtube.com/embed/E6lwO8EfI5M" }
+          ] }
+        }
+      },
+      videoContent: {
+        title: "Video Content",
+        classes: {
+          "Biology": [
+            { name: "CELL: The Building Block of Life", url: "https://www.youtube.com/embed/IkYy7SFXOpg" },
+            { name: "Tissues", url: "https://www.youtube.com/embed/fD6eqAlUxY8" },
+            { name: "Animal Tissues", url: "https://www.youtube.com/embed/iaWpXFWSDWA" },
+            { name: "Plant Tissues", url: "https://www.youtube.com/embed/2ZTYOF5EwQs" },
+            { name: "Life Process", url: "https://www.youtube.com/embed/e0KhpV6V9YY" },
+            { name: "Control and Co-ordination", url: "https://www.youtube.com/embed/Y7vcE2eaeeg" },
+            { name: "Breathing and Respiration", url: "https://www.youtube.com/embed/HCbpd8WbyLA" },
+            { name: "Autotrophic Nutrition in Plants", url: "https://www.youtube.com/embed/A4tqiGHUWyc" },
+            { name: "Human Respiratory System", url: "https://www.youtube.com/embed/TSAqtzgjl-Q" },
+            { name: "Variegated Leaf Experiment", url: "https://www.youtube.com/embed/-Z7Daq7JuK4" },
+            { name: "Nutrition in Plants", url: "https://www.youtube.com/embed/P0I3FJoYDO0" },
+            { name: "How Do Neurons Works?", url: "https://www.youtube.com/embed/qB2kXsF68uw" },
+            { name: "Respiration", url: "https://www.youtube.com/embed/L85bKEsUv3g" },
+            { name: "Nutrition in Human", url: "https://www.youtube.com/embed/yE3GlzspUJk" },
+            { name: "Blood and Blood Vessels", url: "https://www.youtube.com/embed/E-YOyz0bejM" },
+            { name: "Improvement in Food Resources", url: "https://www.youtube.com/embed/tY9EyoPFs5o" },
+            { name: "Heredity and Evolution", url: "https://www.youtube.com/embed/as157ZmxHzM" },
+            { name: "Transportation", url: "https://www.youtube.com/embed/LVVbKoN8Duo" },
+            { name: "Excretion", url: "https://www.youtube.com/embed/KRiG2FrNYw8" },
+            { name: "Reproduction", url: "https://www.youtube.com/embed/f2PUMb2ngxE" },
+            { name: "Asexual Reproduction", url: "https://www.youtube.com/embed/68fVEQcftTw" },
+            { name: "Sexual Reproduction in Plants", url: "https://www.youtube.com/embed/PtP_5k0tB_M" }
+          ],
+          "Physics": [
+            { name: "Current Electricity", url: "https://www.youtube.com/embed/AlDeY2m3RPM" },
+            { name: "Refraction of Light", url: "https://www.youtube.com/embed/6qdkpXoqugw" },
+            { name: "Work, Energy and Power", url: "https://www.youtube.com/embed/KtHqOtCVAvc" },
+            { name: "Motion in a Plane", url: "https://www.youtube.com/embed/layV0wd-6sE" },
+            { name: "Light - Reflection and Refraction", url: "https://www.youtube.com/embed/--tPQ4iui1c" },
+            { name: "Law of Motion", url: "https://www.youtube.com/embed/aBEhb3LEYf4" },
+            { name: "Gravitation", url: "https://www.youtube.com/embed/jW2_H6-_72A" },
+            { name: "Moving Charges and Magnetism", url: "https://www.youtube.com/embed/zZLix447wrU" },
+            { name: "Motion in a Straight Line", url: "https://www.youtube.com/embed/eqZy-ielD1U" },
+            { name: "Biot-Savart Law", url: "https://www.youtube.com/embed/UIk-h_u3uac" },
+            { name: "Wave Optics", url: "https://www.youtube.com/embed/X_NMkbbb974" },
+            { name: "Electric Charges and Fields", url: "https://www.youtube.com/embed/eCZ5IDudt44" },
+            { name: "Semiconductor Electronics", url: "https://www.youtube.com/embed/92vPQGYBOkA" },
+            { name: "Gauss's Law", url: "https://www.youtube.com/embed/V17N4ywkYn4" },
+            { name: "Mechanical Properties of Fluids", url: "https://www.youtube.com/embed/7JMM54STTno" },
+            { name: "Ray Optics and Optical Instruments", url: "https://www.youtube.com/embed/1R5vH6KIpIk" },
+            { name: "Projectile Motion", url: "https://www.youtube.com/embed/o_TTvaGzTT0" },
+            { name: "Ohm's Law", url: "https://www.youtube.com/embed/SrFcg_VvNUY" },
+            { name: "P-N Junction Diode", url: "https://www.youtube.com/embed/qu9reCzzrco" },
+            { name: "Works and Energy", url: "https://www.youtube.com/embed/WliahhFAL8g" },
+            { name: "Diffraction of Light", url: "https://www.youtube.com/embed/XMC0Cd_TK3U" },
+            { name: "Dispersion of White Light", url: "https://www.youtube.com/embed/QU-iPSnAjc8" }
+          ],
+          "Chemistry": [
+            { name: "Solutions", url: "https://www.youtube.com/embed/VFjUOO7ngCE" },
+            { name: "General Chemistry", url: "https://www.youtube.com/embed/5iTOphGnCtg" },
+            { name: "Electro Chemistry", url: "https://www.youtube.com/embed/p8W1bJs6Gaw" },
+            { name: "Chemical Reaction and Equations", url: "https://www.youtube.com/embed/AEyJ0MpddzQ" },
+            { name: "Chemical Kinetics", url: "https://www.youtube.com/embed/x9x53P8iP_g" },
+            { name: "D and F Block Elements", url: "https://www.youtube.com/embed/hRRdT6WURpM" },
+            { name: "Atom and Nuclei", url: "https://www.youtube.com/embed/dArdQoh84Cw" },
+            { name: "Periodic Classification of Elements", url: "https://www.youtube.com/embed/OQ0L7aaIdac" },
+            { name: "Rate of Reaction", url: "https://www.youtube.com/embed/5M4WRT8j4QE" },
+            { name: "Osmosis and Osmotic Pressure", url: "https://www.youtube.com/embed/_80RXj38_EQ" },
+            { name: "Haloalkanes and Haloarenes", url: "https://www.youtube.com/embed/-uXGT0qUArg" },
+            { name: "Acid, Base and Salts", url: "https://www.youtube.com/embed/7lOLYCMl5cQ" },
+            { name: "Structure of Atom", url: "https://www.youtube.com/embed/UJ3BMz48lEE" }
+          ]
+        }
+      }
+    };
+
+    // -----------------------------------------
+    // 3. e-Book Library Data (From Code 2)
+    // -----------------------------------------
+    const eBooksData = {
+      maharashtra: {
+        title: "Maharashtra State Board",
+        chapters: {
+          "Classes 1 to 12": [
+            { name: "Class 1 to 12 Books", url: "https://books.ebalbharati.in/ebook.aspx" }
+          ]
+        }
+      }  
+    };
+
+    // -----------------------------------------
+    // 4. Default 3D Models (From Code 2)
+    // -----------------------------------------
+    const default3DModels = [
+      {
+        name: "Anatomical Human Heart",
+        uid: "e48637d3399a4e5184bdf169929dc36e",
+        thumbUrl: "https://media.sketchfab.com/models/e48637d3399a4e5184bdf169929dc36e/thumbnails/3f47f989397747f6bbe422427c971aec/7ab6731247e044609de8cb7fce771de2.jpeg"
+      },
+      {
+        name: "Human Skeleton",
+        uid: "6db4f2130c544f628cb349f532d49b1b",
+        thumbUrl: "https://media.sketchfab.com/models/6db4f2130c544f628cb349f532d49b1b/thumbnails/f962e9c15c964efca8f32c10473cd247/c590f814280d4049afb085cd5ed00517.jpeg"
+      },
+      {
+        name: "Human Kidney Anatomy Cross Section",
+        uid: "0215aaf9e9a243cdafca249a979680b0",
+        thumbUrl: "https://media.sketchfab.com/models/0215aaf9e9a243cdafca249a979680b0/thumbnails/0d1691fc2342479b99cbaa71e8e70f14/a0ef2646143a4ae1bc9c46894138e5a4.jpeg"
+      },
+      {
+        name: "Biology Plant Cell",
+        uid: "0d87fbe2581b4cabae809bd6aaa7d56b",
+        thumbUrl: "https://media.sketchfab.com/models/0d87fbe2581b4cabae809bd6aaa7d56b/thumbnails/f3a4c891040d4edd808e26b43c2cabc0/1920x1080.jpeg"
+      },
+      {
+        name: "Newton's First Law of Motion - 3d Animation",
+        uid: "2bdff09c38ea44dea9c211783b37c271",
+        thumbUrl: "https://media.sketchfab.com/models/2bdff09c38ea44dea9c211783b37c271/thumbnails/2c9a6a0e28ad406d878c4bb67a9acb9f/6483bb89cc5245ec9bf3ab558675d938.jpeg"
+      },
+      {
+        name: "Atom",
+        uid: "6a283d5b19c34e2b8fcfc6907b231aea",
+        thumbUrl: "https://media.sketchfab.com/models/6a283d5b19c34e2b8fcfc6907b231aea/thumbnails/c9e82c2fd4204ec3a188eb0e6953dd33/e2cd7d722e924daaab0fd8738f2c2d4d.jpeg"
+      }
+    ];
+
+    // ==========================================
+    // LOGIC SECTION
+    // ==========================================
+
+    function renderDefault3DModels() {
+      const container = document.getElementById("simTree");
+      container.innerHTML = ''; 
+      
+      const grid = document.createElement('div');
+      grid.className = 'sketchfab-grid';
+
+      default3DModels.forEach(model => {
+        const card = document.createElement('div');
+        card.className = 'sketchfab-card';
+        card.title = model.name;
+        card.onclick = () => loadSketchfabModel(model.name, model.uid);
+
+        card.innerHTML = `
+          <img src="${model.thumbUrl}" alt="${model.name}" loading="lazy">
+          <h4>${model.name}</h4>
+        `;
+        grid.appendChild(card);
+      });
+
+      container.appendChild(grid);
+    }
+
+    let currentMode = '3d'; 
+    let viewerAPI = null;   
+    let isPlaying = true;
+
+    function switchMode(mode) {
+      currentMode = mode;
+
+      ['3d', 'phet', 'videos', 'ebooks'].forEach(m => {
+        document.getElementById(`tab-${m}`).classList.toggle('active', mode === m);
+      });
+
+      const searchInput = document.getElementById('searchInput');
+      const searchBtn = document.getElementById('searchBtn');
+
+      searchInput.value = "";
+      searchBtn.classList.remove('hidden');
+
+      if (mode === '3d') {
+        searchInput.placeholder = "Search 3D models (e.g. Heart)...";
+        searchBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size: 1.2rem;">arrow_forward</span>`;
+        renderDefault3DModels(); 
+      } else if (mode === 'videos') {
+        searchInput.placeholder = "Search YouTube (Needs API)...";
+        searchBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size: 1.2rem; color: #ff4444;">smart_display</span>`;
+        renderTree();
+      } else {
+        searchInput.placeholder = `Search ${mode === 'phet' ? 'PhET simulations' : 'e-Books'}...`;
+        searchBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size: 1.2rem;">arrow_forward</span>`;
+        renderTree();
+      }
+    }
+
+    document.getElementById('searchInput').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        handleSearchClick();
+      }
+    });
+
+    function handleSearchClick() {
+      const query = document.getElementById('searchInput').value.trim();
+      
+      if (currentMode === '3d') {
+        performSketchfabSearch(query);
+      } else if (currentMode === 'videos') {
+        performYouTubeSearch(query);
+      } else {
+        // PhET & e-Books local search
+        filterSimulations();
+      }
+    }
+
+    // Expanding folder logic for local search
+    function filterSimulations() {
+      const query = document.getElementById("searchInput").value.toLowerCase();
+      const items = document.querySelectorAll(".sim-item");
+      
+      items.forEach(item => {
+        const text = item.innerText.toLowerCase();
+        if (text.includes(query)) {
+          item.classList.remove("hidden");
+          // Expand parent folders automatically so they can be seen
+          let parent = item.parentElement;
+          while (parent && parent.id !== "simTree") {
+            if (parent.classList.contains("hidden")) {
+              parent.classList.remove("hidden");
+              // Toggle the icon of the parent's header
+              if (parent.previousElementSibling && parent.previousElementSibling.querySelector('.material-symbols-outlined')) {
+                 parent.previousElementSibling.querySelector('.material-symbols-outlined').innerText = "expand_less";
+              }
+            }
+            parent = parent.parentElement;
+          }
+        } else {
+          item.classList.add("hidden");
+        }
+      });
+    }
+
+    // New YouTube Search Logic
+      async function performYouTubeSearch(query) {
+      const container = document.getElementById("simTree");
+
+      if (!query) {
+        renderTree(); // Reset to default board videos if query is empty
+        return;
+      }
+
+      // -------------------------------------------------------------
+      // PLACE YOUR YOUTUBE API KEY HERE:
+      // -------------------------------------------------------------
+      const YOUTUBE_API_KEY = "AIzaSyC5JpfjYbP5jxccws_P4rXxzE-fUo-JZWU";
+
+      container.innerHTML = `
+        <div class="loader-container">
+          <div class="loader"></div>
+          <p>Searching YouTube...</p>
+        </div>
+      `;
+
+      // Fallback message if API key isn't set yet
+      if (YOUTUBE_API_KEY === "YOUR_YOUTUBE_API_KEY_HERE") {
+         container.innerHTML = `
+          <div style="padding: 20px; color: rgba(255,255,255,0.8); text-align: center; font-size: 0.9rem;">
+            <span class="material-symbols-outlined" style="font-size: 2.5rem; color: #ff4444; margin-bottom: 10px;">api</span><br>
+            YouTube Search requires an API Key.<br><br>
+            Please insert your API key in the <code>YOUTUBE_API_KEY</code> variable inside the code to enable live YouTube fetching.
+          </div>
+         `;
+         return;
+      }
+
+      try {
+        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&q=${encodeURIComponent(query)}&type=video&key=${YOUTUBE_API_KEY}`;
+        const response = await fetch(url);
+        const data = await response.json();
+        container.innerHTML = '';
+
+        // NEW: Check if Google sent an exact error back
+        if (data.error) {
+          console.error("YouTube API Error:", data.error);
+          container.innerHTML = `<p style="text-align: center; color: #ff4444; padding: 20px;"><b>API Error:</b> ${data.error.message}</p>`;
+          return;
+        }
+
+        if (!data.items || data.items.length === 0) {
+          container.innerHTML = `<p style="text-align: center; color: rgba(255,255,255,0.7); padding: 20px;">No videos found for "${query}".</p>`;
+          return;
+        }
+
+        data.items.forEach(item => {
+          const videoId = item.id.videoId;
+          const title = item.snippet.title;
+          const thumbUrl = item.snippet.thumbnails.default.url;
+
+          const simEl = document.createElement("div");
+          simEl.className = "sim-item";
+          simEl.style.display = "flex";
+          simEl.style.alignItems = "center";
+          simEl.style.gap = "12px";
+          simEl.style.paddingLeft = "10px"; // Adjust for gridless look
+
+          simEl.innerHTML = `
+            <img src="${thumbUrl}" alt="Thumbnail" style="width: 60px; height: 45px; object-fit: cover; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2);">
+            <div style="flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: normal; line-height: 1.2;">${title}</div>
+          `;
+
+          simEl.onclick = () => loadSimulation(title, `https://www.youtube.com/embed/${videoId}`, false);
+          container.appendChild(simEl);
+        });
+      } catch (error) {
+        container.innerHTML = `<p style="text-align: center; color: #ff9999; padding: 20px;">Failed to search YouTube. Check Console.</p>`;
+        console.error(error);
+      }
+    }
+
+    function renderTree() {
+      const container = document.getElementById("simTree");
+      container.innerHTML = "";
+
+      let activeData;
+      if (currentMode === 'phet') activeData = phetData;
+      else if (currentMode === 'videos') activeData = videoData;
+      else if (currentMode === 'ebooks') activeData = eBooksData;
+      else return;
+
+      for (const [subjKey, subject] of Object.entries(activeData)) {
+        // 1. Top Level Header
+        const subjHeader = document.createElement("div");
+        subjHeader.className = "subject-header";
+        subjHeader.innerHTML = `<span>${subject.title}</span> <span class="material-symbols-outlined" style="font-size: 1.2rem;">expand_more</span>`;
+
+        const subjContent = document.createElement("div");
+        subjContent.id = `subj-${subjKey}`;
+        subjContent.classList.add("hidden");
+
+        subjHeader.onclick = () => {
+          subjContent.classList.toggle("hidden");
+          const icon = subjHeader.querySelector('.material-symbols-outlined');
+          icon.innerText = subjContent.classList.contains("hidden") ? "expand_more" : "expand_less";
+        };
+
+        container.appendChild(subjHeader);
+        container.appendChild(subjContent);
+
+        // 2. Standard 2-Level Render (for PhET / eBooks)
+        if (subject.chapters) {
+          for (const [chapterName, sims] of Object.entries(subject.chapters)) {
+            appendChapterUI(subjContent, chapterName, sims, false);
+          }
+        }
+
+        // 3. Nested Classes (3 or 4-level deep, from Code 2)
+        if (subject.classes) {
+          for (const [className, subjectsObj] of Object.entries(subject.classes)) {
+            // Level 2: The Class (e.g., "Class 10", "Physics")
+            const classHeader = document.createElement("div");
+            classHeader.className = "class-header";
+            classHeader.innerHTML = `<span>${className}</span> <span class="material-symbols-outlined" style="font-size: 1.1rem;">chevron_right</span>`;
+            
+            const classContent = document.createElement("div");
+            classContent.classList.add("hidden");
+
+            classHeader.onclick = () => {
+              classContent.classList.toggle("hidden");
+              const icon = classHeader.querySelector('.material-symbols-outlined');
+              icon.innerText = classContent.classList.contains("hidden") ? "expand_more" : "chevron_right";
+            };
+
+            subjContent.appendChild(classHeader);
+            subjContent.appendChild(classContent);
+
+            // Level 3: Handle direct arrays OR objects
+            if (Array.isArray(subjectsObj)) {
+               subjectsObj.forEach(item => {
+                 const simEl = document.createElement("div");
+                 simEl.className = "sim-item";
+                 simEl.innerText = item.name;
+                 simEl.style.paddingLeft = "40px";
+                 simEl.onclick = () => loadSimulation(item.name, item.url, item.external);
+                 classContent.appendChild(simEl);
+               });
+            } else {
+              for (const [subjName, subjectContent] of Object.entries(subjectsObj)) {
+                const subjectSubHeader = document.createElement("div");
+                subjectSubHeader.className = "class-header";
+                subjectSubHeader.style.paddingLeft = "32px";
+                subjectSubHeader.style.backgroundColor = "transparent";
+                subjectSubHeader.style.borderBottom = "none";
+                subjectSubHeader.innerHTML = `<span>${subjName}</span> <span class="material-symbols-outlined" style="font-size: 0.9rem;">chevron_right</span>`;
+                
+                const subjectSubContent = document.createElement("div");
+                subjectSubContent.classList.add("hidden");
+
+                subjectSubHeader.onclick = () => {
+                  subjectSubContent.classList.toggle("hidden");
+                  const icon = subjectSubHeader.querySelector('.material-symbols-outlined');
+                  icon.innerText = subjectSubContent.classList.contains("hidden") ? "expand_more" : "chevron_right";
+                };
+
+                classContent.appendChild(subjectSubHeader);
+                classContent.appendChild(subjectSubContent);
+
+                // Check if it's an array of videos OR an object containing chapters
+                if (Array.isArray(subjectContent)) {
+                  if(subjectContent.length > 0 && subjectContent[0].topics) {
+                      subjectContent.forEach(chapter => {
+                          const chapterHeader = document.createElement("div");
+                          chapterHeader.className = "class-header";
+                          chapterHeader.style.paddingLeft = "48px";
+                          chapterHeader.style.backgroundColor = "transparent";
+                          chapterHeader.style.borderBottom = "none";
+                          chapterHeader.innerHTML = `<span>${chapter.name}</span> <span class="material-symbols-outlined" style="font-size: 0.8rem;">chevron_right</span>`;
+                          
+                          const chapterContent = document.createElement("div");
+                          chapterContent.classList.add("hidden");
+
+                          chapterHeader.onclick = () => {
+                              chapterContent.classList.toggle("hidden");
+                              const icon = chapterHeader.querySelector('.material-symbols-outlined');
+                              icon.innerText = chapterContent.classList.contains("hidden") ? "expand_more" : "chevron_right";
+                          };
+
+                          subjectSubContent.appendChild(chapterHeader);
+                          subjectSubContent.appendChild(chapterContent);
+
+                          chapter.topics.forEach(topic => {
+                              const simEl = document.createElement("div");
+                              simEl.className = "sim-item";
+                              simEl.innerText = topic.name;
+                              simEl.style.paddingLeft = "64px";
+                              simEl.onclick = () => loadSimulation(topic.name, topic.url, topic.external);
+                              chapterContent.appendChild(simEl);
+                          });
+                      });
+                  } else {
+                      // Level 4: The Actual Videos (direct flat array)
+                      if (subjectContent.length === 0) {
+                          const emptyEl = document.createElement("div");
+                          emptyEl.className = "sim-item";
+                          emptyEl.innerText = "Coming Soon...";
+                          emptyEl.style.cursor = "default";
+                          emptyEl.style.opacity = "0.5";
+                          emptyEl.style.paddingLeft = "48px";
+                          subjectSubContent.appendChild(emptyEl);
+                      } else {
+                          subjectContent.forEach(item => {
+                          const simEl = document.createElement("div");
+                          simEl.className = "sim-item";
+                          simEl.innerText = item.name;
+                          simEl.style.paddingLeft = "48px";
+                          simEl.onclick = () => loadSimulation(item.name, item.url, item.external);
+                          subjectSubContent.appendChild(simEl);
+                          });
+                      }
+                  }
+                } else if (typeof subjectContent === 'object') {
+                    for (const [chapterName, videos] of Object.entries(subjectContent)) {
+                          const chapterHeader = document.createElement("div");
+                          chapterHeader.className = "class-header";
+                          chapterHeader.style.paddingLeft = "48px";
+                          chapterHeader.style.backgroundColor = "transparent";
+                          chapterHeader.style.borderBottom = "none";
+                          chapterHeader.innerHTML = `<span>${chapterName}</span> <span class="material-symbols-outlined" style="font-size: 0.8rem;">chevron_right</span>`;
+                          
+                          const chapterContent = document.createElement("div");
+                          chapterContent.classList.add("hidden");
+
+                          chapterHeader.onclick = () => {
+                              chapterContent.classList.toggle("hidden");
+                              const icon = chapterHeader.querySelector('.material-symbols-outlined');
+                              icon.innerText = chapterContent.classList.contains("hidden") ? "expand_more" : "chevron_right";
+                          };
+
+                          subjectSubContent.appendChild(chapterHeader);
+                          subjectSubContent.appendChild(chapterContent);
+
+                          videos.forEach(item => {
+                              const simEl = document.createElement("div");
+                              simEl.className = "sim-item";
+                              simEl.innerText = item.name;
+                              simEl.style.paddingLeft = "64px";
+                              simEl.onclick = () => loadSimulation(item.name, item.url, item.external);
+                              chapterContent.appendChild(simEl);
+                          });
+                    }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    function appendChapterUI(parentContainer, title, items, isDeep = false) {
+      const chapTitle = document.createElement("div");
+      chapTitle.className = "chapter-title";
+      if(isDeep) chapTitle.style.marginLeft = "24px";
+      chapTitle.innerText = title;
+      parentContainer.appendChild(chapTitle);
+
+      if (items.length === 0) {
+        const emptyEl = document.createElement("div");
+        emptyEl.className = "sim-item";
+        emptyEl.innerText = "Coming Soon...";
+        emptyEl.style.cursor = "default";
+        emptyEl.style.opacity = "0.5";
+        if(isDeep) emptyEl.style.paddingLeft = "40px";
+        parentContainer.appendChild(emptyEl);
+      } else {
+        items.forEach(item => {
+          const simEl = document.createElement("div");
+          simEl.className = "sim-item";
+          simEl.innerText = item.name;
+          if(isDeep) {
+             simEl.style.paddingLeft = "40px";
+          }
+          simEl.onclick = () => loadSimulation(item.name, item.url, item.external);
+          parentContainer.appendChild(simEl);
+        });
+      }
+    }
+
+    async function performSketchfabSearch(query) {
+      const container = document.getElementById("simTree");
+
+      if (!query) {
+        renderDefault3DModels(); 
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="loader-container">
+          <div class="loader"></div>
+          <p>Searching Sketchfab...</p>
+        </div>
+      `;
+
+      try {
+        const response = await fetch(`https://api.sketchfab.com/v3/search?type=models&q=${encodeURIComponent(query)}`);
+        const data = await response.json();
+        container.innerHTML = '';
+
+        if (!data.results || data.results.length === 0) {
+          container.innerHTML = `<p style="text-align: center; color: rgba(255,255,255,0.7); padding: 20px;">No 3D models found for "${query}".</p>`;
+          return;
+        }
+
+        const grid = document.createElement('div');
+        grid.className = 'sketchfab-grid';
+
+        data.results.forEach(model => {
+          const thumbUrl = model.thumbnails?.images?.find(img => img.width >= 200)?.url || model.thumbnails?.images?.[0]?.url || '';
+          const card = document.createElement('div');
+          card.className = 'sketchfab-card';
+          card.title = model.name;
+          card.onclick = () => loadSketchfabModel(model.name, model.uid);
+          card.innerHTML = `
+            <img src="${thumbUrl}" alt="${model.name}" loading="lazy">
+            <h4>${model.name}</h4>
+          `;
+          grid.appendChild(card);
+        });
+        container.appendChild(grid);
+      } catch (error) {
+        container.innerHTML = '<p style="text-align: center; color: #ff9999; padding: 20px;">Failed to load models.</p>';
+      }
+    }
+
+    function loadSketchfabModel(name, uid) {
+      const iframe = document.getElementById("phetIframe");
+      const placeholder = document.getElementById("whiteboardPlaceholder");
+      const titleSpan = document.getElementById("active-sim-title");
+      const modelControls = document.getElementById("sketchfabControls");
+
+      placeholder.classList.add("hidden");
+      iframe.classList.remove("hidden");
+      
+      titleSpan.innerHTML = `<span class="material-symbols-outlined" style="font-size: 1rem;">3d_rotation</span> ${name}`;
+      modelControls.classList.remove("hidden");
+
+      isPlaying = true;
+      document.getElementById('animIcon').innerText = 'pause';
+      document.getElementById('animText').innerText = 'Pause';
+      document.getElementById('toggleAnimBtn').setAttribute('aria-label', 'Pause Animation');
+
+      viewerAPI = null;
+      const client = new Sketchfab('1.12.1', iframe);
+      client.init(uid, {
+        autostart: 1,
+        ui_theme: 'dark',
+        transparent: 1, 
+        success: function onSuccess(api) {
+          viewerAPI = api;
+          api.start();
+        }
+      });
+    }
+
+    function toggleAnimation() {
+      if (!viewerAPI) return;
+      const icon = document.getElementById('animIcon');
+      const text = document.getElementById('animText');
+      const btn = document.getElementById('toggleAnimBtn');
+      
+      if (isPlaying) {
+        viewerAPI.pause();
+        icon.innerText = 'play_arrow';
+        text.innerText = 'Play';
+        btn.setAttribute('aria-label', 'Play Animation');
+      } else {
+        viewerAPI.play();
+        icon.innerText = 'pause';
+        text.innerText = 'Pause';
+        btn.setAttribute('aria-label', 'Pause Animation');
+      }
+      isPlaying = !isPlaying;
+    }
+
+    function toggleSidebar() {
+      document.getElementById("sidePanel").classList.toggle("closed");
+    }
+
+    function loadSimulation(name, url, external = false) {
+      if (external) {
+        window.open(url, '_blank');
+        return;
+      }
+      
+      document.getElementById("sketchfabControls").classList.add("hidden");
+      viewerAPI = null;
+
+      const iframe = document.getElementById("phetIframe");
+      const placeholder = document.getElementById("whiteboardPlaceholder");
+      const titleSpan = document.getElementById("active-sim-title");
+
+      iframe.src = url;
+      iframe.classList.remove("hidden");
+      placeholder.classList.add("hidden");
+      
+      let icon = "science";
+      if(currentMode === "videos") icon = "play_circle";
+      if(currentMode === "ebooks") icon = "library_books";
+      
+      titleSpan.innerHTML = `<span class="material-symbols-outlined" style="font-size: 1rem;">${icon}</span> ${name}`;
+    }
+
+    // Init
+    renderDefault3DModels();
+
+  </script>
+</body>
+</html>
